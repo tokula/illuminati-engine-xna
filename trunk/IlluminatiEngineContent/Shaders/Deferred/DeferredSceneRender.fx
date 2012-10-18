@@ -3,7 +3,7 @@
 texture colorMap;
 texture lightMap;
 
-float AmbientMag = 0;//.125;z
+float AmbientMag = .125;
 
 sampler colorSampler = sampler_state
 {
