@@ -409,12 +409,10 @@ namespace IlluminatiEngine.Renderer.Deferred
             for (int l = 0; l < cnt; l++)
                 RenderLightShadows(gameTime, lights[l]);
         }
-
+        public int shadowMapSize = 3;
         public void SetLightShadowMaps(List<ILight> lights)
         {
             int cnt = lights.Count;
-
-            int shadowMapSize = 3;
 
             for (int l = 0; l < cnt; l++)
                 lights[l].ShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width * shadowMapSize, GraphicsDevice.Viewport.Height * shadowMapSize, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
