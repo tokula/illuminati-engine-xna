@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IlluminatiEngine</RootNamespace>
+    <AssemblyName>IlluminatiEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
+    <XnaCrossPlatformGroupID>95310d58-316b-4678-ad7d-0e545be5ffaf</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS,BULLETXNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AwesomiumSharp, Version=1.6.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\AwesomiumSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BulletSharp">
+      <HintPath>.\BulletSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Kinect, Version=1.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseObjects\AwesomiumUIManager.cs" />
+    <Compile Include="BaseObjects\Base3DCamera.cs" />
+    <Compile Include="BaseObjects\Base3DDeferredObjectInstance.cs" />
+    <Compile Include="BaseObjects\Base3DDeferredObjectlInstancer.cs" />
+    <Compile Include="BaseObjects\Base3DDeferredSkinnedInstance.cs" />
+    <Compile Include="BaseObjects\Base3DDeferredSkinnedObjectInstancer.cs" />
+    <Compile Include="BaseObjects\Base3DParticleInstance.cs" />
+    <Compile Include="BaseObjects\BaseDeferredObject.cs" />
+    <Compile Include="BaseObjects\BaseDeferredRenderGame.cs" />
+    <Compile Include="BaseObjects\BaseDeferredSkinnedObject.cs" />
+    <Compile Include="BaseObjects\BulletSharpDeferredDebugDraw.cs" />
+    <Compile Include="BaseObjects\BulletSharpObject.cs" />
+    <Compile Include="BaseObjects\BulletSharpPhysicsComponent.cs" />
+    <Compile Include="BaseObjects\BulletXNADeferredDebugDraw.cs" />
+    <Compile Include="BaseObjects\BulletXNAGhostObject.cs" />
+    <Compile Include="BaseObjects\BulletXNAObject.cs" />
+    <Compile Include="BaseObjects\BulletXNAPhysicsComponent.cs" />
+    <Compile Include="BaseObjects\DeferredSkyBox.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\BruteForceGeoClipMapTerrain.cs" />
+    <Compile Include="BaseObjects\Base3DParticleInstancer.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMap.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapCentre.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintBase.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintBlock.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintFixUp.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintTrim.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapLayer.cs" />
+    <Compile Include="Input\InputHandlerService.cs" />
+    <Compile Include="Input\Managers\AccelerometerManager.cs" />
+    <Compile Include="Input\Managers\GamePadManager.cs" />
+    <Compile Include="Input\Managers\KeyboardStateManager.cs" />
+    <Compile Include="Input\Managers\MouseStateManager.cs" />
+    <Compile Include="Input\Managers\TouchCollectionManager.cs" />
+    <Compile Include="Interfaces\I3DInstancer.cs" />
+    <Compile Include="Interfaces\ICanCastShadow.cs" />
+    <Compile Include="Interfaces\IDebuggable.cs" />
+    <Compile Include="Interfaces\IDeferredRender.cs" />
+    <Compile Include="Interfaces\IGGR.cs" />
+    <Compile Include="Interfaces\IGridRegisterable.cs" />
+    <Compile Include="Interfaces\IHasMesh.cs" />
+    <Compile Include="Interfaces\IInputStateManagerService.cs" />
+    <Compile Include="Interfaces\ILight.cs" />
+    <Compile Include="Interfaces\IImplementsCustomShader.cs" />
+    <Compile Include="Kinect\KinectComponent.cs" />
+    <Compile Include="Kinect\KinectComponentOld.cs" />
+    <Compile Include="PostProcessing\BasePostProcess.cs" />
+    <Compile Include="PostProcessing\BasePostProcessingEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\BloomEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\CrepuscularRays.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\DepthOfFieldEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\FogEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\HeatHaze.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\RadialBlur.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\RippleEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\SSAOEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\STHardpointEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\SunEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\TestEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingEffects\WaterEffect.cs" />
+    <Compile Include="PostProcessing\PostProcessingManager.cs" />
+    <Compile Include="PostProcessing\PostProcess\Bloom.cs" />
+    <Compile Include="PostProcessing\PostProcess\BlurH.cs" />
+    <Compile Include="PostProcessing\PostProcess\BlurV.cs" />
+    <Compile Include="PostProcessing\PostProcess\BrightPass.cs" />
+    <Compile Include="PostProcessing\PostProcess\DepthOfField.cs" />
+    <Compile Include="PostProcessing\PostProcess\Fog.cs" />
+    <Compile Include="PostProcessing\PostProcess\GaussBlurH.cs" />
+    <Compile Include="PostProcessing\PostProcess\GaussBlurV.cs" />
+    <Compile Include="PostProcessing\PostProcess\LightRay.cs" />
+    <Compile Include="PostProcessing\PostProcess\LightSceneMask.cs" />
+    <Compile Include="PostProcessing\PostProcess\LightSourceMask.cs" />
+    <Compile Include="PostProcessing\PostProcess\MotionBlur.cs" />
+    <Compile Include="PostProcessing\PostProcess\PoissonDiscBlur.cs" />
+    <Compile Include="PostProcessing\PostProcess\WorldPositionMap.cs" />
+    <Compile Include="PostProcessing\PostProcess\RadialBlur.cs" />
+    <Compile Include="PostProcessing\PostProcess\Ripple.cs" />
+    <Compile Include="PostProcessing\PostProcess\SceneBlend.cs" />
+    <Compile Include="PostProcessing\PostProcess\SSAO.cs" />
+    <Compile Include="PostProcessing\PostProcess\STHardpoints.cs" />
+    <Compile Include="PostProcessing\PostProcess\Sun.cs" />
+    <Compile Include="PostProcessing\PostProcess\Water.cs" />
+    <Compile Include="Renderer\Deferred\BaseLight.cs" />
+    <Compile Include="Renderer\Deferred\DeferredConeLight.cs" />
+    <Compile Include="Renderer\Deferred\DeferredDirectionalLight.cs" />
+    <Compile Include="Renderer\Deferred\DeferredRender.cs" />
+    <Compile Include="Renderer\Deferred\DeferrredPointLight.cs" />
+    <Compile Include="Renderer\Deferred\ScreenQuad.cs" />
+    <Compile Include="Utilities\AssetManager.cs" />
+    <Compile Include="Interfaces\I3DObject.cs" />
+    <Compile Include="Interfaces\IAssetManager.cs" />
+    <Compile Include="Interfaces\ICameraService.cs" />
+    <Compile Include="Services\DrawableGameComponentService.cs" />
+    <Compile Include="Services\GameComponentService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\FPSCounter.cs" />
+    <Compile Include="Utilities\GameComponentHelper.cs" />
+    <Compile Include="Utilities\GeographicGridRegistrationSystem.cs" />
+    <Compile Include="Utilities\SeralizationTool.cs" />
+    <Compile Include="Utilities\SimpleProfiler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PostProcessing\PostProcess\BumpMapDistort.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BulletXNA\BulletXNA\BulletXNA-Windows.csproj">
+      <Project>{4E1937EE-3139-44CB-989D-F050BC099CE6}</Project>
+      <Name>BulletXNA-Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IlluminatiContentClasses\IlluminatiContentClasses.csproj">
+      <Project>{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}</Project>
+      <Name>IlluminatiContentClasses</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Awesomium.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AwesomiumProcess.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AwesomiumSharp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icudt42.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>
