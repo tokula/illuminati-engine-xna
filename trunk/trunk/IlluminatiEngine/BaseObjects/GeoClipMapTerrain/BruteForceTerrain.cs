@@ -45,8 +45,9 @@ namespace IlluminatiEngine
         public ObjectArray<int> terrainIndices;
 
         bool KinectFeed = false;
-        
-        public BruteForceTerrain(Game game, string heightMapAsset) : this(game)
+
+        public BruteForceTerrain(Game game, string heightMapAsset)
+            : this(game)
         {
             this.heightMapAsset = heightMapAsset;
 
@@ -59,7 +60,7 @@ namespace IlluminatiEngine
             scale = Vector3.One;
             position = Vector3.Zero;
             rotation = Quaternion.Identity;
-            
+
             effect = "Shaders/Terrain/GeoClipMapTerrain";
 
             KinectFeed = true;
@@ -102,34 +103,16 @@ namespace IlluminatiEngine
             }
 
             // Build the physics stuff
-            //IndexedMesh mesh = new IndexedMesh();
-
-            ////mesh.Allocate(verts.Length, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero), (width - 1) * (height - 1) * 2, 3 * sizeof(int));
-            //mesh.m_numVertices = verts.Length;
-            //mesh.m_vertexStride = System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero);
-            //mesh.m_numTriangles = verts.Length / 3;
-            //mesh.m_indexType = PHY_ScalarType.PHY_INTEGER;
-            //mesh.m_triangleIndexStride = 3 * sizeof(int);
-
-            //mesh.m_vertexBase = realVerts;
-
-            TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray(realVerts.Count / 3, terrainIndices, 1, realVerts.Count, realVerts, 1);
-            
-            
-            //mesh.m_triangleIndexBase = new BulletSharpPhyiscs.LinearMath.int3[terrainIndices.Length];
-           
-            //for (int idx = 0; idx < terrainIndices.Length; idx++)
-            //    ((BulletSharpPhyiscs.LinearMath.int3[])mesh.m_triangleIndexBase)[idx] = new BulletSharpPhyiscs.LinearMath.int3(terrainIndices[idx], 0, 0);
-
-            //mesh.m_triangleIndexBase = terrainIndices;
-            //vertexArray.AddIndexedMesh(mesh, PHY_ScalarType.PHY_INTEGER);            
+            TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray((width - 1) * (height - 1) * 2, terrainIndices, 3 * sizeof(int), realVerts.Count, realVerts, 3 * sizeof(float));
+                      
             CollisionShape btTerrain = new BvhTriangleMeshShape(vertexArray, true, true);
-            RigidBodyConstructionInfo rbInfo =new RigidBodyConstructionInfo(0, new DefaultMotionState(), btTerrain, Vector3.Zero);
+            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(0, new DefaultMotionState(Matrix.CreateTranslation(Vector3.Zero), Matrix.Identity), btTerrain, Vector3.Zero);
+
 
             RigidBody = new RigidBody(rbInfo);
 
             RigidBody.Translate(Position);
-                
+
         }
         public override void Draw(GameTime gameTime, Effect effect)
         {
@@ -184,10 +167,10 @@ namespace IlluminatiEngine
             if (effect.CurrentTechnique.Name == "ShadowMapT") // Shadow Map
             { }
             else
-            {                
+            {
                 effect.Parameters["sqrt"].SetValue((width + height) / 2);
                 effect.Parameters["mod"].SetValue((width + height) / 2);
-                
+
                 effect.Parameters["EyePosition"].SetValue(Camera.Position);
                 effect.Parameters["maxHeight"].SetValue(30);
 
@@ -216,7 +199,7 @@ namespace IlluminatiEngine
             }
         }
 
-        
+
 
     }
 }

@@ -233,7 +233,8 @@ namespace IlluminatiEngine
             if (blank_normal == null)
             {
                 blank_normal = new Texture2D(Game.GraphicsDevice, 1, 1);
-                blank_normal.SetData<Color>(new Color[] { new Color(128,128,255) });
+                //blank_normal.SetData<Color>(new Color[] { new Color(128,128,255) });
+                blank_normal.SetData<Color>(new Color[] { new Color(0, 0, 0) });
             }
         }
 
