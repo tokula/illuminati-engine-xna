@@ -122,7 +122,7 @@
     <Compile Include="BaseObjects\BulletXNAObject.cs" />
     <Compile Include="BaseObjects\BulletXNAPhysicsComponent.cs" />
     <Compile Include="BaseObjects\DeferredSkyBox.cs" />
-    <Compile Include="BaseObjects\GeoClipMapTerrain\BruteForceGeoClipMapTerrain.cs" />
+    <Compile Include="BaseObjects\GeoClipMapTerrain\BruteForceTerrain.cs" />
     <Compile Include="BaseObjects\Base3DParticleInstancer.cs" />
     <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMap.cs" />
     <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapCentre.cs" />
