@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainWithWater", "TerrainWithWater\TerrainWithWater\TerrainWithWater.csproj", "{F5833A97-0462-4A70-9D36-BCFC26F843F1}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "TerrainWithWaterContent", "TerrainWithWater\TerrainWithWaterContent\TerrainWithWaterContent.contentproj", "{3B1748C9-FB94-420B-A218-854D09561291}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IlluminatiEngineContent", "..\..\IlluminatiEngineContent\IlluminatiEngineContent.contentproj", "{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IlluminatiEngine", "..\..\IlluminatiEngine\IlluminatiEngine.csproj", "{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BulletXNA-Windows", "..\..\BulletXNA\BulletXNA\BulletXNA-Windows.csproj", "{4E1937EE-3139-44CB-989D-F050BC099CE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IlluminatiContentClasses", "..\..\IlluminatiContentClasses\IlluminatiContentClasses.csproj", "{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Debug|x86.ActiveCfg = Debug|x86
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Debug|x86.Build.0 = Debug|x86
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Release|Any CPU.ActiveCfg = Release|x86
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Release|x86.ActiveCfg = Release|x86
+		{F5833A97-0462-4A70-9D36-BCFC26F843F1}.Release|x86.Build.0 = Release|x86
+		{3B1748C9-FB94-420B-A218-854D09561291}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3B1748C9-FB94-420B-A218-854D09561291}.Debug|x86.ActiveCfg = Debug|x86
+		{3B1748C9-FB94-420B-A218-854D09561291}.Release|Any CPU.ActiveCfg = Release|x86
+		{3B1748C9-FB94-420B-A218-854D09561291}.Release|x86.ActiveCfg = Release|x86
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Release|x86.ActiveCfg = Debug|Any CPU
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Debug|x86.ActiveCfg = Debug|x86
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Debug|x86.Build.0 = Debug|x86
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Release|Any CPU.ActiveCfg = Release|x86
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Release|x86.ActiveCfg = Release|x86
+		{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}.Release|x86.Build.0 = Release|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Debug|x86.ActiveCfg = Debug|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Debug|x86.Build.0 = Debug|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Release|Any CPU.ActiveCfg = Release|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Release|x86.ActiveCfg = Release|x86
+		{4E1937EE-3139-44CB-989D-F050BC099CE6}.Release|x86.Build.0 = Release|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Debug|x86.ActiveCfg = Debug|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Debug|x86.Build.0 = Debug|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Release|Any CPU.ActiveCfg = Release|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Release|x86.ActiveCfg = Release|x86
+		{B62A8A21-3F1A-4953-8394-3A22DD8E2CA8}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

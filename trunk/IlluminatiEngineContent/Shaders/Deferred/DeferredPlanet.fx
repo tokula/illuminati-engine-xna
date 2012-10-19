@@ -16,8 +16,6 @@ float cloudSpeed = .0025;
 float cloudHeight = .005;
 float cloudShadowIntensity = 1;
 
-float timer;
-
 bool hasAtmos = true;
 
 texture textureMat;

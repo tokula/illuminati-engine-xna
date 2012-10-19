@@ -10,15 +10,24 @@ namespace IlluminatiEngine.PostProcessing
 {
     public class WaterEffect : BasePostProcessingEffect
     {
-        public Water water;
+        Water water;
 
-        public Texture2D LightMap { set { water.LightMap = value; } }
-        public float WaterLevel { set { water.WaterLevel = value; } }
+        public float waterHeight
+        {
+            get { return water.waterLevel; }
+            set { water.waterLevel = value; }
+        }
 
-        public WaterEffect(Game game, float waterLevel)
+        public float seaFloor
+        {
+            get { return water.seaFloor; }
+            set { water.seaFloor = value; }
+        }
+
+        public WaterEffect(Game game)
             : base(game)
         {
-            water = new Water(game, waterLevel);
+            water = new Water(game);
 
             AddPostProcess(water);
         }

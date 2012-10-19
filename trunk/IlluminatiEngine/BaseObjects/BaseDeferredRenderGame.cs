@@ -191,7 +191,8 @@ namespace IlluminatiEngine
             ripple.Enabled = false;
             ppManager.AddEffect(ripple);
 
-            water = new WaterEffect(this, -25f);
+            water = new WaterEffect(this);
+            water.waterHeight = -25f;
             water.Enabled = false;
             ppManager.AddEffect(water);
         }

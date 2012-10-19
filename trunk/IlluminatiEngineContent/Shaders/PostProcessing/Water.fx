@@ -1,24 +1,5 @@
-
-
-float fWaveFreq = 0.75f;
-float fWaveAmp = 0.125f;
-float timer	: Time;
-
-// Wave
-struct Wave {
-	float	fFreq;	// Frequency (2PI / Wavelength)
-	float	fAmp;	// Amplitude
-	float	fPhase;	// Phase (Speed * 2PI / Wavelength)
-	float2	vDir;	// Direction
-};
-
-#define NUMWAVES	3
-
-
-float EvaluateWave( Wave w, float2 vPos, float fTime ) 
-{
-	return w.fAmp * (sin( dot( w.vDir, vPos ) * w.fFreq + fTime * w.fPhase) + cos( dot( w.vDir, vPos ) * w.fFreq + fTime * w.fPhase)) ;
-}
+#include "PPVertexShader.fx"
+#include "../ShaderTools.fxh"
 
 // Water pixel shader
 // Based on the pixel shader by Wojciech Toman 2009
@@ -29,10 +10,37 @@ float EvaluateWave( Wave w, float2 vPos, float fTime )
 
 float4x4 InvertViewProjection; 	
 
+float2 halfPixel;
+
 texture lightMap;
 sampler lightSampler = sampler_state
 {
-    Texture = (lightMap);    
+    Texture = (lightMap);
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;    
+};
+
+texture sceneNormal;
+sampler sceneNormalSampler = sampler_state
+{
+    Texture = (sceneNormal);
+	AddressU  = clamp; 
+    AddressV  = clamp;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;    
+};
+
+texture caustics;
+sampler causticsSampler = sampler_state
+{
+    Texture = (caustics);
+	AddressU  = mirror; 
+    AddressV  = mirror;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;    
 };
 
 texture heightMapTex;
@@ -41,18 +49,36 @@ sampler heightMap = sampler_state
     Texture   = <heightMapTex>;    
     AddressU  = mirror; 
     AddressV  = mirror;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;
 };
 texture sgrMap;
 sampler SGRSampler = sampler_state
 {
-    Texture = (sgrMap);    
+    Texture = (sgrMap);  
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;  
 };
-sampler backBufferMap : register(s0);
+texture backBufferMapTex;
+sampler backBufferMap = sampler_state
+{
+    Texture   = <backBufferMapTex>;  
+	AddressU  = clamp; 
+    AddressV  = clamp;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT; 
+};
 
 texture positionMapTex;
 sampler positionMap = sampler_state
 {
-    Texture   = <positionMapTex>;    
+    Texture   = <positionMapTex>;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;    
 };
 
 texture normalMapTex;
@@ -61,6 +87,9 @@ sampler normalMap = sampler_state
     Texture   = <normalMapTex>;
     AddressU  = mirror; 
     AddressV  = mirror;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;
 };
 texture foamMapTex;
 sampler foamMap = sampler_state
@@ -68,101 +97,19 @@ sampler foamMap = sampler_state
     Texture   = <foamMapTex>;
     AddressU  = mirror; 
     AddressV  = mirror;
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;
 };
 
 texture reflectionMapTex;
 sampler reflectionMap = sampler_state
 {
-    Texture   = <reflectionMapTex>;       
+    Texture   = <reflectionMapTex>;    
+	MagFilter = POINT;
+    MinFilter = POINT;
+    Mipfilter = POINT;   
 };
-
-float Viscosity = 5.0f;
-// We need this matrix to restore position in world space
-float4x4 matViewInverse;
-
-// Level at which water surface begins
-float waterLevel = -25.0f;
-
-// Position of the camera
-float3 cameraPos;
-
-// How fast will colours fade out. You can also think about this
-// values as how clear water is. Therefore use smaller values (eg. 0.05f)
-// to have crystal clear water and bigger to achieve "muddy" water.
-float fadeSpeed = 0.15f;
-
-// Normals scaling factor
-float normalScale = 1.0f;
-
-// R0 is a constant related to the index of refraction (IOR).
-// It should be computed on the CPU and passed to the shader.
-float R0 = 0.5f;
-
-// Direction of the light
-float3 lightDir = {0.0f, 1.0f, -0.25f};
-
-// Colour of the sun
-float3 sunColor = {1.0f, 1.0f, 1.0f};
-
-// The smaller this value is, the more soft the transition between
-// shore and water. If you want hard edges use very big value.
-// Default is 1.0f.
-float shoreHardness = 1.0f;
-
-// This value modifies current fresnel term. If you want to weaken
-// reflections use bigger value. If you want to empasize them use
-// value smaller then 0. Default is 0.0f.
-float refractionStrength = 0.0f;
-//float refractionStrength = -0.3f;
-
-// Modifies 4 sampled normals. Increase first values to have more
-// smaller "waves" or last to have more bigger "waves"
-float4 normalModifier = {1.0f, 2.0f, 4.0f, 8.0f};
-
-// Strength of displacement along normal.
-float displace = .01f;
-
-// Describes at what depth foam starts to fade out and
-// at what it is completely invisible. The fird value is at
-// what height foam for waves appear (+ waterLevel).
-float3 foamExistence = {0.65f, 1.35f, 0.5f};
-
-float sunScale = 3.0f;
-
-float4x4 matReflection =
-{
-/*{0.5f, 0.0f, 0.0f, 0.0f},
-{0.0f, 0.5f, 0.0f, 0.0f},
-{0.0f, 0.0f, 1.0f, 0.0f},
-{0.5f + (0.5f / 800), 0.5f + (0.5f / 600), 0.0f, 1.0f}
-*/
-{0.5f, 0.0f, 0.0f, 0.0f},
-{0.0f, 0.5f, 0.0f, 0.0f},
-{0.0f, 0.0f, 1.0f, 0.0f},
-{0.5f, 0.5f, 0.0f, 1.0f}
-};
-
-
-float4x4 matViewProj;
-
-float shininess = 0.32f;
-
-// Colour of the water surface
-float3 depthColour = {0.0078f, 0.5176f, 0.7f};
-// Colour of the water depth
-float3 bigDepthColour = {0.0039f, 0.00196f, 0.145f};
-float3 extinction = {7.0f, 30.0f, 40.0f};			// Horizontal
-
-// Water transparency along eye vector.
-float visibility = 4.0f;
-
-// Increase this value to have more smaller waves.
-float2 scale = {.001f, .001f};
-float refractionScale = .005;//0.005f;
-
-// Wind force in x and z axes.
-float2 wind = {-0.3f, 0.7f};
-
 
 // VertexShader results
 struct VertexOutput
@@ -178,43 +125,23 @@ struct PS_OUTPUT
 	float4 position: COLOR2;
 };
 
+float fogMinThickness = .999f;
+float fogMaxThickness = 0.0f;
+float fogDistance = 10;
+float fogRange = 50;
+float camMin;
+float camMax;
+float seaFloor = -30.0f;
 
-float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
-{
-	float3 dp1 = ddx(P);
-	float3 dp2 = ddy(P);
-	float2 duv1 = ddx(UV);
-	float2 duv2 = ddy(UV);
-	
-	float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
-	float2x3 inverseM = float2x3( cross( M[1], M[2] ), cross( M[2], M[0] ) );
-	float3 T = mul(float2(duv1.x, duv2.x), inverseM);
-	float3 B = mul(float2(duv1.y, duv2.y), inverseM);
-	
-	return float3x3(normalize(T), normalize(B), N);
-}
-
-// Function calculating fresnel term.
-// - normal - normalized normal vector
-// - eyeVec - normalized eye vector
-float fresnelTerm(float3 normal, float3 eyeVec)
-{
-	float angle = 1.0f - saturate(dot(normal, eyeVec));
-	float fresnel = angle * angle;
-	fresnel = fresnel * fresnel;
-	fresnel = fresnel * angle;
-	return saturate(fresnel * (1.0f - saturate(R0)) + R0 - refractionStrength);
-}
-float2 halfPixel;
-float4 main(VertexOutput IN): COLOR0
+float4 WaterPS(VertexOutput IN): COLOR0
 {
 	
 	IN.texCoord -= halfPixel;
 	float3 color2 = tex2D(backBufferMap, IN.texCoord).rgb;
 	float3 color = color2;
 	
-	float3 bdc = bigDepthColour * tex2D(lightSampler,IN.texCoord);
-	float3 dc = depthColour * tex2D(lightSampler,IN.texCoord);
+	float3 bigDepthColourl = bigDepthColour;// * tex2D(lightSampler,IN.texCoord);
+	float3 depthColourl = depthColour;// * tex2D(lightSampler,IN.texCoord);
 	
 	float3 position;
 	
@@ -235,6 +162,7 @@ float4 main(VertexOutput IN): COLOR0
 	float level = waterLevel;
 	float depth = 0.0f;
 
+	
 	float3 eyeVec = position - cameraPos;
 	float diff = level - position.y;
 	float cameraDepth = cameraPos.y - position.y;
@@ -247,42 +175,18 @@ float4 main(VertexOutput IN): COLOR0
 	eyeVecNorm = normalize(eyeVecNorm);
 	
 	float2 texCoord;
-	
-	/*
-	// Waves	
-	Wave Waves[NUMWAVES] = {
-		{ 1.0f, 1.00f, 0.50f, float2( -1.0f, -0.1f ) },
-		{ 2.0f, 1.50f, 1.30f, float2( -0.7f, 0.7f ) },
-		{ .50f, 2.50f, 0.250f, float2( 0.2f, -0.1f ) },
-	};
-	// Generate some waves!
-    Waves[0].fFreq 	= fWaveFreq;
-    Waves[0].fAmp 	= fWaveAmp;
-
-    Waves[1].fFreq 	= fWaveFreq * 2.0f;
-    Waves[1].fAmp 	= fWaveAmp * 0.5f;
-    
-    Waves[2].fFreq 	= fWaveFreq * 3.0f;
-    Waves[2].fAmp 	= fWaveAmp * 1.0f;
-
-	// Sum up the waves
-	float ddx = 0.0f, ddy = 0.0f;
-	for( int i = 0; i < NUMWAVES; i++ ) 
+	for(int i = 0; i < 10; ++i)
 	{
-		level += EvaluateWave( Waves[i], surfacePoint.xz, timer );
+		texCoord = (surfacePoint.xz + eyeVecNorm.xz * 1.0f) * scale + timer * 0.01f * wind;
+			
+		float bias = tex2D(heightMap, texCoord).r;
+	
+		bias *= 0.1f;
+		level += bias * maxAmplitude;
+		t = (level - cameraPos.y) / eyeVecNorm.y;
+		surfacePoint = cameraPos + eyeVecNorm * t;
 	}
 
-	*/
-	
-	//texCoord = (surfacePoint.xz + eyeVecNorm.xz * 0.1f) + timer;
-	//level += tex2D(heightMap,texCoord * .25);
-	
-	texCoord = (surfacePoint.xz + eyeVecNorm.xz * 0.1f) * scale + timer * 0.01 * wind;
-	
-	
-	t = (level - cameraPos.y) / eyeVecNorm.y;
-	surfacePoint = cameraPos + eyeVecNorm * t;
-	
 	depth = length(position - surfacePoint);
 	float depth2 = surfacePoint.y - position.y;
 	
@@ -290,35 +194,33 @@ float4 main(VertexOutput IN): COLOR0
 	
 	
 	// If we are underwater let's leave out complex computations
-	if(level > cameraPos.y)
-	{
-		color = color2 *  dc;				
-	}	
+	if(level >= cameraPos.y)
+	{	
+		float fSceneZ = ( -camMin * ((camMax /(camMax - camMin))) ) / ( depthVal - ((camMax /(camMax - camMin))));
+		float fFogFactor = clamp(saturate( ( fSceneZ - fogDistance ) / fogRange ),fogMaxThickness,fogMinThickness);
+
+		float mod = .05f;
+		float2 uv = (position.xz * mod);
+
+		float4 sceneNormal = tex2D(sceneNormalSampler,IN.texCoord);
+		float3 n = 2.0f * sceneNormal.rgb -1.0f;
+		float d = saturate(dot(n,normalize(lightDir)));
+
+		float caustic = (tex2D(causticsSampler,uv).r * 2);
+
+		if(position.y < level)
+			color = color2 * lerp(depthColourl,bigDepthColourl,saturate(fFogFactor))  * caustic;
+		else
+			color = color2 * lerp(depthColourl,bigDepthColourl,saturate(fFogFactor));
+
+		//color = depthVal > .8f;//position.y < level;
+		//color = position.y/(seaFloor);
+	}
 	else
 	{
-		if(position.y <= level)
+		if(position.y < level)
 		{
-			// Generate the Normal			
-			float3 n[3];
-			for( int i = 0; i < NUMWAVES; i++ ) 
-			{
-				for(int c=0;c < 3;c++)
-				{
-					float2 xz = surfacePoint.zx;
-					if(c == 1)
-						xz.x+=1;
-					if(c == 2)
-						xz.y-=1;
-						
-					float y = level;//waterLevel + EvaluateWave( Waves[i], xz, timer );
-					
-					n[c] = float3(xz.x,y,xz.y);
-				}
-			}
-			float3 s[2];
-			s[0] = n[0] - n[1];
-			s[1] = n[0] - n[2];
-			float3 myNormal =  normalize(cross(s[0],s[1]));
+		    float3 myNormal = float3(0,1,0);
 			
 			// Bump Mapping
 			texCoord = surfacePoint.xz * 1.6 + wind * timer * .016;
@@ -341,8 +243,6 @@ float4 main(VertexOutput IN): COLOR0
 			float3 normal = normalize(normal0a * normalModifier.x + normal1a * normalModifier.y +
 									  normal2a * normalModifier.z + normal3a * normalModifier.w);
 			
-			//normal = myNormal;
-			
 			// Refraction.
 			texCoord = IN.texCoord;
 			texCoord.x += sin((timer * Viscosity) + 3.0f * abs(position.y)) * (refractionScale * min(depth2, 1.0f)) * ((1-depthVal)*255);
@@ -350,8 +250,8 @@ float4 main(VertexOutput IN): COLOR0
 			
 			float3 depthN = depth * fadeSpeed;
 			float3 waterCol = saturate(length(sunColor) / sunScale);
-			refraction = saturate(lerp(lerp(refraction, dc * waterCol, saturate(depthN / visibility)),
-							  bdc * waterCol, saturate(depth2 / extinction)));
+			refraction = saturate(lerp(lerp(refraction, depthColourl * waterCol, saturate(depthN / visibility)),
+							  bigDepthColourl * waterCol, saturate(depth2 / extinction)));
 			
 			// Reflection	
 					
@@ -382,43 +282,48 @@ float4 main(VertexOutput IN): COLOR0
 			// Foam
 			float foam = 0.0f;		
 
-			texCoord = (surfacePoint.xz + eyeVecNorm.xz * 0.1) * 0.05 + timer * 0.01f * wind + sin(timer * 0.1 + position.x) * 0.025;
-			float2 texCoord2 = (surfacePoint.xz + eyeVecNorm.xz * 0.1) * 0.05 + timer * 0.02f * wind + sin(timer * 0.1 + position.z) * 0.025;
+			texCoord = (surfacePoint.xz + eyeVecNorm.xz * 0.1) * 0.05 + timer * 0.01f * wind + sin(timer * 0.1 + position.x) * 0.0125;
+			float2 texCoord2 = (surfacePoint.xz + eyeVecNorm.xz * 0.1) * 0.05 + timer * 0.02f * wind + sin(timer * 0.1 + position.z) * 0.0125;
 			
 			if(depth2 < foamExistence.x)
 				foam = (tex2D(foamMap, texCoord) + tex2D(foamMap, texCoord2)) * 0.5f;				
-			else if(depth2 < foamExistence.y)
+			else 
+				if(depth2 < foamExistence.y)
 			{
 				foam = lerp((tex2D(foamMap, texCoord) + tex2D(foamMap, texCoord2)) * 0.5f, 0.0f,
 							 (depth2 - foamExistence.x) / (foamExistence.y - foamExistence.x));
 				
 			}
-			foam *= tex2D(lightSampler,IN.texCoord)*2;
+			//foam *= tex2D(lightSampler,IN.texCoord)*2;
 			
 			// Specular			
 			float fresnel = fresnelTerm(normal, eyeVecNorm);
 			half3 specular = 0.0f;
 			float3 Half = normalize(lightDir + eyeVecNorm);
 			specular = pow(saturate(dot(normal,Half)),25) * shininess;
-			specular += pow(saturate(dot(myNormal,Half)),25) * shininess;
+			//specular += pow(saturate(dot(myNormal,Half)),25) * shininess;
 							  
 			//color = refraction;// + specular;	
 			color = lerp(refraction, reflect, fresnel);
-			color = saturate(color + max(specular * (tex2D(lightSampler,IN.texCoord)*2), foam * sunColor));			
-			color = lerp(refraction, color, saturate(depth * shoreHardness));				
+			//color = saturate(color + max(specular * (tex2D(lightSampler,IN.texCoord)*2), foam * sunColor));			
+			color = saturate(color + max(specular, foam * sunColor));			
+			color = lerp(refraction, color, saturate(depth * shoreHardness));			
+
 		}	
 		if(position.y > level)
 			color = color2;
-	}	
+	}
+	
+	
 
 	return float4(color, 1.0f);
 }
 
-
-Technique PostProcess
+technique Water
 {
-    Pass Go
+	pass p0
     {       
-        PixelShader  = compile ps_3_0 main();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+        PixelShader  = compile ps_3_0 WaterPS();
     }
 }
