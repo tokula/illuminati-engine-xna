@@ -60,9 +60,6 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IlluminatiEngine">
-      <HintPath>..\..\..\..\IlluminatiEngine\bin\x86\Debug\IlluminatiEngine.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -90,6 +87,10 @@
       <Project>{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}</Project>
       <Name>IlluminatiEngineContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\IlluminatiEngine\IlluminatiEngine.csproj">
+      <Project>{D506A25B-82A1-48E6-BC13-B0E8F3F880DA}</Project>
+      <Name>IlluminatiEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\SkinnedMeshInstancedContent\SkinnedMeshInstancedContent.contentproj">
       <Name>SkinnedMeshInstancedContent</Name>
