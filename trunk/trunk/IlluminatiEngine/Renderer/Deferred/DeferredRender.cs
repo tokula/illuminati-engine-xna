@@ -440,10 +440,11 @@ namespace IlluminatiEngine.Renderer.Deferred
             {
 #if WINDOWS
                 // terrain 
-                if (Game.Components[c] is BruteForceGeoClipMapTerrain)
+                if (Game.Components[c] is BruteForceTerrain)
                 {
                     deferredShadowEffect.CurrentTechnique = deferredShadowEffect.Techniques["ShadowMapT"];
-                    ((BruteForceGeoClipMapTerrain)Game.Components[c]).Draw(gameTime, deferredShadowEffect);
+                    ((BruteForceTerrain)Game.Components[c]).Draw(gameTime, deferredShadowEffect);
+                    continue;
                 }
 #endif
                 // Deferred items
@@ -452,6 +453,7 @@ namespace IlluminatiEngine.Renderer.Deferred
                     //rlsDeferredList.Add(gc as IDeferredRender);
                     deferredShadowEffect.CurrentTechnique = deferredShadowEffect.Techniques["ShadowMap"];
                     ((IDeferredRender)Game.Components[c]).Draw(gameTime, deferredShadowEffect);
+                    continue;
                 }
 
                 // skinned
@@ -461,19 +463,21 @@ namespace IlluminatiEngine.Renderer.Deferred
                     deferredSkinnedShadowEffect.CurrentTechnique = deferredSkinnedShadowEffect.Techniques["ShadowMap"];
                     ((BaseDeferredSkinnedObject)Game.Components[c]).Draw(gameTime, deferredSkinnedShadowEffect);
                     //idr.Draw(gameTime, deferredSkinnedShadowEffect);
+                    continue;
                 }
                 // Instanced
                 if (Game.Components[c] is IDeferredRender && Game.Components[c] is IInstanced)
                 {
-
                     deferredShadowEffect.CurrentTechnique = deferredShadowEffect.Techniques["ShadowMapH"];
                     ((IDeferredRender)Game.Components[c]).Draw(gameTime, deferredShadowEffect);
+                    continue;
                 }
                 // Skinned and instanced
                 if (Game.Components[c] is Base3DDeferredSkinnedObjectInstancer)
                 {
                     deferredSkinnedShadowEffect.CurrentTechnique = deferredSkinnedShadowEffect.Techniques["ShadowMapH"];
                     ((Base3DDeferredSkinnedObjectInstancer)Game.Components[c]).Draw(gameTime, deferredSkinnedShadowEffect);
+                    continue;
                 }                
             }
             Game.GraphicsDevice.SetRenderTarget(null);            
