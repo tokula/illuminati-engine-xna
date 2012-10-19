@@ -448,7 +448,7 @@ namespace IlluminatiEngine.Renderer.Deferred
                 }
 #endif
                 // Deferred items
-                if (Game.Components[c] is IDeferredRender && !(Game.Components[c] is IInstanced))
+                if (Game.Components[c] is IDeferredRender && !(Game.Components[c] is IInstanced) && !(Game.Components[c] is BaseDeferredSkinnedObject))
                 {
                     //rlsDeferredList.Add(gc as IDeferredRender);
                     deferredShadowEffect.CurrentTechnique = deferredShadowEffect.Techniques["ShadowMap"];

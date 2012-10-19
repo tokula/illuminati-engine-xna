@@ -52,7 +52,7 @@ namespace BasicTerrain
             GodRays.Enabled = true;
             GodRays.LightSourceSize = 1500;
             GodRays.bp.Enabled = false;
-            //GodRays.lightSourceasset = "Textures/flare2";
+            GodRays.lightSourceasset = "Textures/flare2";
             SunPosition *= 2.5f;
             GodRays.Decay = .96f;
             GodRays.Density = 1f;
