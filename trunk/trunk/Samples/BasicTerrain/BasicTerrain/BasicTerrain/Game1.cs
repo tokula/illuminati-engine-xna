@@ -15,6 +15,7 @@ using IlluminatiEngine.Renderer.Deferred;
 using IlluminatiEngine.Utilities;
 
 using Bullet = BulletXNA;
+using BulletXNA.BulletCollision;
 
 namespace BasicTerrain
 {
@@ -69,14 +70,21 @@ namespace BasicTerrain
         float StartPosX = -5;
         float StartPosY = -5;
         float StartPosZ = -3;
+
+
+
         public override void InitializePhysics()
         {
             base.InitializePhysics();
 
+            CollisionFilterGroups colGroup = CollisionFilterGroups.DefaultFilter;
+            CollisionFilterGroups colMask = CollisionFilterGroups.AllFilter;
+
+
             BulletPhysicsXNA.DebugDrawMode = BulletXNA.LinearMath.DebugDrawModes.DBG_DrawAabb;
 
             //BulletSharpObject ball = new BulletSharpObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.Identity,Matrix.Identity), new Bullet.SphereShape(1), new Bullet.SphereShape(1).CalculateLocalInertia(5));
-            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero);
+            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero,colGroup,colMask);
             //ball.RigidBody.Restitution = 5f;
             //ball.RigidBody.Friction = 10f;
             ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
@@ -118,7 +126,7 @@ namespace BasicTerrain
 
                         // using motionstate is recommended, it provides interpolation capabilities
                         // and only synchronizes 'active' objects
-                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform,Matrix.Identity), colShape, localInertia);
+                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform,Matrix.Identity), colShape, localInertia,colGroup,colMask);
                         box.TextureMaterials.Add("Textures/BoxColor");
                         box.NormalMaterials.Add("Textures/BoxNormal");
                         
@@ -141,7 +149,7 @@ namespace BasicTerrain
                             -20
                         );
 
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia);
+                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
                     box.TextureMaterials.Add("Textures/BoxColor01");
                     box.NormalMaterials.Add("Textures/BoxNormal01");
 
@@ -161,7 +169,7 @@ namespace BasicTerrain
                             0
                         );
 
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia);
+                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
                     box.TextureMaterials.Add("Textures/BoxColor");
                     box.NormalMaterials.Add("Textures/BoxNormal01");
 
@@ -180,7 +188,7 @@ namespace BasicTerrain
                             (2 * w + (((h % 2) == 0) ? start_x + 1 : start_x)) - 12f
                         );
 
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia);
+                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
                     box.TextureMaterials.Add("Textures/BoxColor01");
                     box.NormalMaterials.Add("Textures/BoxNormal01");
 
