@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnedMeshInstanced", "SkinnedMeshInstanced\SkinnedMeshInstanced\SkinnedMeshInstanced.csproj", "{5031E202-419E-490A-B608-0DEBD88AF322}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "SkinnedMeshInstancedContent", "SkinnedMeshInstanced\SkinnedMeshInstancedContent\SkinnedMeshInstancedContent.contentproj", "{48D3FF66-00FC-4ED1-9BCD-0EA9AB30B4B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IlluminatiEngineContent", "..\..\IlluminatiEngineContent\IlluminatiEngineContent.contentproj", "{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Debug|x86.ActiveCfg = Debug|x86
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Debug|x86.Build.0 = Debug|x86
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Release|Any CPU.ActiveCfg = Release|x86
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Release|x86.ActiveCfg = Release|x86
+		{5031E202-419E-490A-B608-0DEBD88AF322}.Release|x86.Build.0 = Release|x86
+		{48D3FF66-00FC-4ED1-9BCD-0EA9AB30B4B9}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{48D3FF66-00FC-4ED1-9BCD-0EA9AB30B4B9}.Debug|x86.ActiveCfg = Debug|x86
+		{48D3FF66-00FC-4ED1-9BCD-0EA9AB30B4B9}.Release|Any CPU.ActiveCfg = Release|x86
+		{48D3FF66-00FC-4ED1-9BCD-0EA9AB30B4B9}.Release|x86.ActiveCfg = Release|x86
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}.Release|x86.ActiveCfg = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
