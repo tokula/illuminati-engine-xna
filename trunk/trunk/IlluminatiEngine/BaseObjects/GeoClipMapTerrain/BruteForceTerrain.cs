@@ -8,19 +8,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using IlluminatiEngine.Kinect;
-using BulletSharpPhyiscs = BulletXNA;
+using BulletXNA.BulletDynamics;
+using BulletXNA.BulletCollision;
+using BulletXNA;
+using BulletXNA.LinearMath;
+
 
 namespace IlluminatiEngine
 {
     public class BruteForceTerrain : BaseDeferredObject
     {
-        public BulletSharpPhyiscs.BulletDynamics.RigidBody RigidBody;
+        public RigidBody RigidBody;
 
         public int height = 512;
         public int width = 512;
         public VertexPositionColor[] verts;
 
-        public Vector3[] realVerts;
+        public ObjectArray<Vector3> realVerts;
 
         Texture2D heightMap;
 
@@ -38,7 +42,7 @@ namespace IlluminatiEngine
 
         public Vector3 LightPosition;
         string heightMapAsset;
-        public int[] terrainIndices;
+        public ObjectArray<int> terrainIndices;
 
         bool KinectFeed = false;
         
@@ -67,7 +71,7 @@ namespace IlluminatiEngine
             height = heightMap.Height;
 
             verts = new VertexPositionColor[width * height];
-            realVerts = new Vector3[verts.Length];
+            realVerts = new ObjectArray<Vector3>(verts.Length);
             Color[] md = new Color[verts.Length];
 
             heightMap.GetData<Color>(md);
@@ -82,7 +86,7 @@ namespace IlluminatiEngine
                 }
             }
 
-            terrainIndices = new int[(width - 1) * (height - 1) * 6];
+            terrainIndices = new ObjectArray<int>((width - 1) * (height - 1) * 6);
             for (int x = 0; x < width - 1; x++)
             {
                 for (int y = 0; y < height - 1; y++)
@@ -98,29 +102,31 @@ namespace IlluminatiEngine
             }
 
             // Build the physics stuff
-            BulletSharpPhyiscs.BulletCollision.TriangleIndexVertexArray vertexArray = new BulletSharpPhyiscs.BulletCollision.TriangleIndexVertexArray();
-            BulletSharpPhyiscs.BulletCollision.IndexedMesh mesh = new BulletSharpPhyiscs.BulletCollision.IndexedMesh();
+            //IndexedMesh mesh = new IndexedMesh();
 
-            //mesh.Allocate(verts.Length, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero), (width - 1) * (height - 1) * 2, 3 * sizeof(int));
-            mesh.m_numVertices = verts.Length;
-            mesh.m_vertexStride = System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero);
-            mesh.m_numTriangles = verts.Length / 3;
-            mesh.m_indexType = BulletSharpPhyiscs.BulletCollision.PHY_ScalarType.PHY_INTEGER;
-            mesh.m_triangleIndexStride = 3 * sizeof(int);
+            ////mesh.Allocate(verts.Length, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero), (width - 1) * (height - 1) * 2, 3 * sizeof(int));
+            //mesh.m_numVertices = verts.Length;
+            //mesh.m_vertexStride = System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero);
+            //mesh.m_numTriangles = verts.Length / 3;
+            //mesh.m_indexType = PHY_ScalarType.PHY_INTEGER;
+            //mesh.m_triangleIndexStride = 3 * sizeof(int);
 
-            mesh.m_vertexBase = realVerts;
+            //mesh.m_vertexBase = realVerts;
+
+            TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray(realVerts.Count / 3, terrainIndices, 1, realVerts.Count, realVerts, 1);
+            
+            
             //mesh.m_triangleIndexBase = new BulletSharpPhyiscs.LinearMath.int3[terrainIndices.Length];
            
             //for (int idx = 0; idx < terrainIndices.Length; idx++)
             //    ((BulletSharpPhyiscs.LinearMath.int3[])mesh.m_triangleIndexBase)[idx] = new BulletSharpPhyiscs.LinearMath.int3(terrainIndices[idx], 0, 0);
 
-            mesh.m_triangleIndexBase = terrainIndices;
-            vertexArray.AddIndexedMesh(mesh, BulletSharpPhyiscs.BulletCollision.PHY_ScalarType.PHY_INTEGER);            
-            BulletSharpPhyiscs.BulletCollision.CollisionShape btTerrain = new BulletSharpPhyiscs.BulletCollision.BvhTriangleMeshShape(vertexArray, true, true);
-            BulletSharpPhyiscs.BulletDynamics.RigidBodyConstructionInfo rbInfo =
-                            new BulletSharpPhyiscs.BulletDynamics.RigidBodyConstructionInfo(0, new BulletSharpPhyiscs.DefaultMotionState(), btTerrain, Vector3.Zero);
+            //mesh.m_triangleIndexBase = terrainIndices;
+            //vertexArray.AddIndexedMesh(mesh, PHY_ScalarType.PHY_INTEGER);            
+            CollisionShape btTerrain = new BvhTriangleMeshShape(vertexArray, true, true);
+            RigidBodyConstructionInfo rbInfo =new RigidBodyConstructionInfo(0, new DefaultMotionState(), btTerrain, Vector3.Zero);
 
-            RigidBody = new BulletSharpPhyiscs.BulletDynamics.RigidBody(rbInfo);
+            RigidBody = new RigidBody(rbInfo);
 
             RigidBody.Translate(Position);
                 
@@ -206,7 +212,7 @@ namespace IlluminatiEngine
                 //Game.GraphicsDevice.SetVertexBuffer(vb);
                 //Game.GraphicsDevice.Indices = ib;
                 //Game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, width * height, 0, (width - 1) * (height - 1) * 2);
-                Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, terrainIndices, 0, (width - 1) * (height - 1) * 2);
+                Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, terrainIndices.GetRawArray(), 0, (width - 1) * (height - 1) * 2);
             }
         }
 

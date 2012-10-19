@@ -49,6 +49,18 @@ namespace IlluminatiEngine
             SetUpBulletPhysicsBody(mass, motionState, collisionShape, localInertia);
         }
 
+        public BulletXNAObject(Game game, string modelAssetName, float mass, DefaultMotionState motionState, CollisionShape collisionShape, Vector3 localInertia, CollisionFilterGroups collisionGroup, CollisionFilterGroups collisionMask) : this(game, modelAssetName, mass, motionState, collisionShape, localInertia, false, collisionGroup, collisionMask) { }
+        public BulletXNAObject(Game game, string modelAssetName, float mass, DefaultMotionState motionState, CollisionShape collisionShape, Vector3 localInertia, bool ghost, CollisionFilterGroups collisionGroup, CollisionFilterGroups collisionMask)
+            : base(game, modelAssetName)
+        {
+            m_motionState = motionState;
+            CollisionGroups = collisionGroup;
+            CollisionMask = collisionMask;
+            IsGhost = ghost;
+            SetUpBulletPhysicsBody(mass, motionState, collisionShape, localInertia);
+        }
+
+
         public virtual void SetUpBulletPhysicsBody(float mass, IMotionState motionState, CollisionShape collisionShape, Vector3 localInertia)
         {
             Mass = mass;
