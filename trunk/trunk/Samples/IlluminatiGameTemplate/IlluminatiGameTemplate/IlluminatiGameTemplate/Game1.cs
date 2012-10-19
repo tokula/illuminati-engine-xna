@@ -161,9 +161,8 @@ namespace IlluminatiGameTemplate
             spriteBatch.DrawString(font, "Esc        - Exit", Vector2.Zero, Color.Gold);
             spriteBatch.DrawString(font, "F1         - Deferred Debug On/Off", new Vector2(0, font.LineSpacing), Color.Gold);
             spriteBatch.DrawString(font, "WASD       - Translate Camera", new Vector2(0, font.LineSpacing * 2), Color.Gold);
-            spriteBatch.DrawString(font, "Arrow Keys - Translate Camera", new Vector2(0, font.LineSpacing * 3), Color.Gold);
-            spriteBatch.DrawString(font, "Space      - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);
-            
+            spriteBatch.DrawString(font, "Arrow Keys - Rotate Camera", new Vector2(0, font.LineSpacing * 3), Color.Gold);
+            spriteBatch.DrawString(font, "Space      - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);           
 
             spriteBatch.End();
         }
