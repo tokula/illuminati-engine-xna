@@ -42,7 +42,7 @@ namespace BasicTerrain
             DeferredSkyBox sb = new DeferredSkyBox(this, "Textures/SkyBox/cubeMap");
             Components.Add(sb);
 
-            terrain = new BruteForceTerrain(this, "Textures/Terrain/Maps/TheValley");
+            terrain = new BruteForceTerrain(this, "Textures/Terrain/Maps/heightMap3");
             terrain.Position = new Vector3(-128,-30,-128);
             Components.Add(terrain);
           
@@ -64,7 +64,7 @@ namespace BasicTerrain
         }
 
         // create 125 (5x5x5) dynamic objects
-        int ArraySizeX = 5, ArraySizeY = 5, ArraySizeZ = 5;
+        int ArraySizeX = 3, ArraySizeY = 3, ArraySizeZ = 3;
 
         // scaling of the objects (0.1 = 20 centimeter boxes )
         float StartPosX = -5;
@@ -80,16 +80,11 @@ namespace BasicTerrain
             CollisionFilterGroups colGroup = CollisionFilterGroups.DefaultFilter;
             CollisionFilterGroups colMask = CollisionFilterGroups.AllFilter;
 
-
-            BulletPhysicsXNA.DebugDrawMode = BulletXNA.LinearMath.DebugDrawModes.DBG_DrawAabb;
-
-            //BulletSharpObject ball = new BulletSharpObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.Identity,Matrix.Identity), new Bullet.SphereShape(1), new Bullet.SphereShape(1).CalculateLocalInertia(5));
             BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero,colGroup,colMask);
-            //ball.RigidBody.Restitution = 5f;
-            //ball.RigidBody.Friction = 10f;
             ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
             ball.TextureMaterials.Add("Textures/core1");
             ball.NormalMaterials.Add("Textures/core1Normal");
+            ball.RigidBody.SetFriction(1);
             boxs.Add(ball);
             Components.Add(ball);
 
@@ -137,66 +132,34 @@ namespace BasicTerrain
                 }
             }
 
-            //start_x -= 4;
+            start_x -= 8;
 
-            for (int w = 0; w < 8; w++)
+            for (k = 0; k < 2; k++)
             {
-                for (int h = 0; h < 3; h++)
+                for (i = 0; i < 2; i++)
                 {
-                    Matrix startTransform = Matrix.CreateTranslation(
-                            2 * w + (((h % 2) == 0) ? start_x : start_x + 1),
-                            2 * h + start_y,
-                            -20
+                    for (j = 0; j < 2; j++)
+                    {
+                        Matrix startTransform = Matrix.CreateTranslation(
+                            2 * i + start_x,
+                            2 * k + start_y,
+                            2 * j + start_z
                         );
 
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
-                    box.TextureMaterials.Add("Textures/BoxColor01");
-                    box.NormalMaterials.Add("Textures/BoxNormal01");
-
-                    box.TranslateAA(new Vector3(0, 7, 0));
-                    boxs.Add(box);
-                    Components.Add(box);
+                        // using motionstate is recommended, it provides interpolation capabilities
+                        // and only synchronizes 'active' objects
+                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform,Matrix.Identity), colShape, localInertia,colGroup,colMask);
+                        box.TextureMaterials.Add("Textures/BoxColor01");
+                        box.NormalMaterials.Add("Textures/BoxNormal01");
+                        
+                        box.TranslateAA(new Vector3(0, 7, 0));
+                        boxs.Add(box);
+                        Components.Add(box);
+                    }
                 }
             }
 
-            for (int w = 0; w < 8; w++)
-            {
-                for (int h = 0; h < 3; h++)
-                {
-                    Matrix startTransform = Matrix.CreateTranslation(
-                            2 * w + (((h % 2) == 0) ? start_x : start_x + 1),
-                            2 * h + start_y,
-                            0
-                        );
-
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
-                    box.TextureMaterials.Add("Textures/BoxColor");
-                    box.NormalMaterials.Add("Textures/BoxNormal01");
-
-                    box.TranslateAA(new Vector3(0, 7, 0));
-                    boxs.Add(box);
-                    Components.Add(box);
-                }
-            }
-            for (int w = 0; w < 8; w++)
-            {
-                for (int h = 0; h < 3; h++)
-                {
-                    Matrix startTransform = Matrix.CreateTranslation(
-                            start_x - 1f,
-                            2 * h + start_y,
-                            (2 * w + (((h % 2) == 0) ? start_x + 1 : start_x)) - 12f
-                        );
-
-                    BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia,colGroup,colMask);
-                    box.TextureMaterials.Add("Textures/BoxColor01");
-                    box.NormalMaterials.Add("Textures/BoxNormal01");
-
-                    box.TranslateAA(new Vector3(0, 7, 0));
-                    boxs.Add(box);
-                    Components.Add(box);
-                }
-            }
+            
 
 
             IsPhysicsEnabled = false;
@@ -273,6 +236,18 @@ namespace BasicTerrain
             if (inputHandler.KeyboardManager.KeyDown(Keys.Down) || inputHandler.GamePadManager.State[PlayerIndex.One].ThumbSticks.Right.Y < 0)
                 camera.Rotate(Vector3.Right, -speedRot);
 
+            if (inputHandler.KeyboardManager.KeyDown(Keys.NumPad8))
+                boxs[0].LinearVelocity += new Vector3(0, 0, -1);
+            if (inputHandler.KeyboardManager.KeyDown(Keys.NumPad2))
+                boxs[0].LinearVelocity += new Vector3(0, 0, 1);
+            if (inputHandler.KeyboardManager.KeyDown(Keys.NumPad4))
+                boxs[0].LinearVelocity += new Vector3(-1, 0, 0);
+            if (inputHandler.KeyboardManager.KeyDown(Keys.NumPad6))
+                boxs[0].LinearVelocity += new Vector3(1, 0, 0);
+
+            if (inputHandler.KeyboardManager.KeyDown(Keys.NumPad0))
+                boxs[0].LinearVelocity += new Vector3(0, 1, 0);
+
             if (inputHandler.KeyboardManager.KeyPress(Keys.P))
                 IsPhysicsEnabled = !IsPhysicsEnabled;
 
@@ -296,12 +271,13 @@ namespace BasicTerrain
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(font, "Esc        - Exit", Vector2.Zero, Color.Gold);
-            spriteBatch.DrawString(font, "F1         - Deferred Debug On/Off", new Vector2(0, font.LineSpacing), Color.Gold);
-            spriteBatch.DrawString(font, "WASD       - Translate Camera", new Vector2(0, font.LineSpacing * 2), Color.Gold);
-            spriteBatch.DrawString(font, "Arrow Keys - Translate Camera", new Vector2(0, font.LineSpacing * 3), Color.Gold);
-            spriteBatch.DrawString(font, "Space      - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);
-
+            spriteBatch.DrawString(font, "Esc           - Exit", Vector2.Zero, Color.Gold);
+            spriteBatch.DrawString(font, "F1            - Deferred Debug On/Off", new Vector2(0, font.LineSpacing), Color.Gold);
+            spriteBatch.DrawString(font, "WASD          - Translate Camera", new Vector2(0, font.LineSpacing * 2), Color.Gold);
+            spriteBatch.DrawString(font, "Arrow Keys    - Translate Camera", new Vector2(0, font.LineSpacing * 3), Color.Gold);
+            spriteBatch.DrawString(font, "Space         - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);
+            spriteBatch.DrawString(font, "NumPad Arrows - Translate Sphere", new Vector2(0, font.LineSpacing * 5), Color.Gold);
+            spriteBatch.DrawString(font, "NumPad 0      - Translate Sphere Up", new Vector2(0, font.LineSpacing * 6), Color.Gold);
 
             spriteBatch.End();
         }
