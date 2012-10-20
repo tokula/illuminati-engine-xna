@@ -24,7 +24,7 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             this.rotation = Quaternion.Identity;
 
-            this.ShadowMod = .001d;
+            this.ShadowMod = .0001d;
         }
 
         protected Matrix RotationMatrix
