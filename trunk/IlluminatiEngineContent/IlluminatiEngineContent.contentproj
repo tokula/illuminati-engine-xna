@@ -72,11 +72,6 @@
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
     </Compile>
-    <Compile Include="Models\sphere2.x">
-      <Name>sphere2</Name>
-      <Importer>XImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
     <Compile Include="Models\SkyBox.x">
       <Name>SkyBox</Name>
       <Importer>XImporter</Importer>
@@ -116,6 +111,11 @@
       <Name>QuadParticleInstance</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Models\sphere2.x">
+      <Name>sphere2</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
     </Compile>
     <None Include="Shaders\Deferred\DeferredHeader.fxh">
       <Name>DeferredHeader</Name>
