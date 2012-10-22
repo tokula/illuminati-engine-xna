@@ -24,6 +24,10 @@ namespace IlluminatiEngine.PostProcessing
             set { water.seaFloor = value; }
         }
 
+        public float maxAmplitude { get { return water.maxAmplitude; } set { water.maxAmplitude = value; } }
+
+        public float refractionScale { get { return water.refractionScale; } set { water.refractionScale = value; } }
+
         public WaterEffect(Game game)
             : base(game)
         {

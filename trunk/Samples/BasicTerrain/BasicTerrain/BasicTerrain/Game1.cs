@@ -60,6 +60,8 @@ namespace BasicTerrain
             GodRays.Exposure = .04f;
             GodRays.Weight = 1;
 
+            Water.Enabled = true;
+
             UseBulletPhysics = true;  
         }
 

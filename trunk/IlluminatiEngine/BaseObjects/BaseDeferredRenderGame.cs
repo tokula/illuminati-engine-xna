@@ -156,11 +156,6 @@ namespace IlluminatiEngine
             SSAO.Enabled = false;
             ppManager.AddEffect(SSAO);
 
-            godRays = new CrepuscularRays(this, SunPosition, "Textures/flare",  1500, 1f,    .99f, 1f, .15f, .25f);
-            //godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, .1f, 0.12f, .25f);
-            godRays.Enabled = false;
-            ppManager.AddEffect(godRays);
-
             //stHPe = new STHardPointEffect(this, 25, 30, new Color(48, 89, 122));
             stHPe = new STHardPointEffect(this, 25, 30, new Color(41, 77, 107), new Color(.125f, .125f, .125f,1.0f));
             stHPe.Enabled = false;
@@ -195,6 +190,11 @@ namespace IlluminatiEngine
             water.waterHeight = -25f;
             water.Enabled = false;
             ppManager.AddEffect(water);
+
+            godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, 1f, .15f, .25f);
+            //godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, .1f, 0.12f, .25f);
+            godRays.Enabled = false;
+            ppManager.AddEffect(godRays);
         }
 
         public delegate void DeviceCreationEvent(object sender, PreparingDeviceSettingsEventArgs e);

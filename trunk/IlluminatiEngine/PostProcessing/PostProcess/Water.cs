@@ -13,6 +13,9 @@ namespace IlluminatiEngine.PostProcessing
         public float waterLevel = 0;
         public float seaFloor = -30;
 
+        public float maxAmplitude = 3.25f;
+        public float refractionScale = .00525f;
+
         public Water(Game game)
             : base(game)
         {
@@ -49,6 +52,9 @@ namespace IlluminatiEngine.PostProcessing
             effect.Parameters["matViewInverse"].SetValue(Matrix.Invert(camera.View));
             effect.Parameters["halfPixel"].SetValue(HalfPixel);
             effect.Parameters["matViewProj"].SetValue(camera.View * camera.Projection);
+
+            effect.Parameters["maxAmplitude"].SetValue(maxAmplitude);
+            effect.Parameters["refractionScale"].SetValue(refractionScale);
 
             effect.Parameters["camMin"].SetValue(camera.Viewport.MinDepth);
             effect.Parameters["camMax"].SetValue(camera.Viewport.MaxDepth);
