@@ -92,6 +92,7 @@ namespace BasicTerrain
             float mass = 1.0f;
 
             Bullet.BulletCollision.CollisionShape colShape = new Bullet.BulletCollision.BoxShape(Vector3.One);
+            
 
             //CollisionShapes.Add(colShape);
             Vector3 localInertia = Vector3.Zero;
@@ -264,7 +265,7 @@ namespace BasicTerrain
             if (terrain.RigidBody != null && !tDone)
             {
                 tDone = true;
-                ((BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent))).World.AddRigidBody(terrain.RigidBody);
+                ((BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent))).World.AddRigidBody(terrain.RigidBody as BulletXNA.BulletDynamics.RigidBody);
             }
 
             base.Draw(gameTime);
