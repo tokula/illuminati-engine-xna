@@ -279,6 +279,7 @@ namespace BasicTerrain
             spriteBatch.DrawString(font, "Space         - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);
             spriteBatch.DrawString(font, "NumPad Arrows - Translate Sphere", new Vector2(0, font.LineSpacing * 5), Color.Gold);
             spriteBatch.DrawString(font, "NumPad 0      - Translate Sphere Up", new Vector2(0, font.LineSpacing * 6), Color.Gold);
+            spriteBatch.DrawString(font, "P             - Switch Physics On/Off", new Vector2(0, font.LineSpacing * 7), Color.Gold);
 
             spriteBatch.End();
         }
