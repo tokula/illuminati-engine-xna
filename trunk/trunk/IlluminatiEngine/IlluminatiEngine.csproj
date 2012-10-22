@@ -118,7 +118,6 @@
     <Compile Include="BaseObjects\BulletSharpObject.cs" />
     <Compile Include="BaseObjects\BulletSharpPhysicsComponent.cs" />
     <Compile Include="BaseObjects\BulletXNADeferredDebugDraw.cs" />
-    <Compile Include="BaseObjects\BulletXNAGhostObject.cs" />
     <Compile Include="BaseObjects\BulletXNAObject.cs" />
     <Compile Include="BaseObjects\BulletXNAPhysicsComponent.cs" />
     <Compile Include="BaseObjects\DeferredSkyBox.cs" />
@@ -201,6 +200,7 @@
     <Compile Include="Utilities\FPSCounter.cs" />
     <Compile Include="Utilities\GameComponentHelper.cs" />
     <Compile Include="Utilities\GeographicGridRegistrationSystem.cs" />
+    <Compile Include="Utilities\ObjectArray.cs" />
     <Compile Include="Utilities\SeralizationTool.cs" />
     <Compile Include="Utilities\SimpleProfiler.cs" />
   </ItemGroup>
