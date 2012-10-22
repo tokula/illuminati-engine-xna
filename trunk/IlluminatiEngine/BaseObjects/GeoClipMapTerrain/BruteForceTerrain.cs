@@ -75,6 +75,7 @@ namespace IlluminatiEngine
                     verts[idx].Position = new Vector3(y, 0, x);
                 }
             }
+
             CreatePhysicsObject();
         }
         public override void Draw(GameTime gameTime, Effect effect)
