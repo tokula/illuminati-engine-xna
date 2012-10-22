@@ -8,23 +8,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using IlluminatiEngine.Kinect;
-using BulletXNA.BulletDynamics;
-using BulletXNA.BulletCollision;
-using BulletXNA;
-using BulletXNA.LinearMath;
 
 
 namespace IlluminatiEngine
 {
     public class BruteForceTerrain : BaseDeferredObject
     {
-        public RigidBody RigidBody;
+        public Object RigidBody;
 
         public int height = 512;
         public int width = 512;
         public VertexPositionColor[] verts;
-
-        public ObjectArray<Vector3> realVerts;
+        public int[] indices;
 
         Texture2D heightMap;
 
@@ -42,7 +37,6 @@ namespace IlluminatiEngine
 
         public Vector3 LightPosition;
         string heightMapAsset;
-        public ObjectArray<int> terrainIndices;
 
         bool KinectFeed = false;
 
@@ -72,10 +66,6 @@ namespace IlluminatiEngine
             height = heightMap.Height;
 
             verts = new VertexPositionColor[width * height];
-            realVerts = new ObjectArray<Vector3>(verts.Length);
-            Color[] md = new Color[verts.Length];
-
-            heightMap.GetData<Color>(md);
 
             for (int x = 0; x < width; x++)
             {
@@ -83,36 +73,9 @@ namespace IlluminatiEngine
                 {
                     int idx = x + y * width;
                     verts[idx].Position = new Vector3(y, 0, x);
-                    realVerts[idx] = new Vector3(x, (md[idx].R / 256f) * 30f, y);
                 }
             }
-
-            terrainIndices = new ObjectArray<int>((width - 1) * (height - 1) * 6);
-            for (int x = 0; x < width - 1; x++)
-            {
-                for (int y = 0; y < height - 1; y++)
-                {
-                    terrainIndices[(x + y * (width - 1)) * 6] = ((x + 1) + (y + 1) * width);
-                    terrainIndices[(x + y * (width - 1)) * 6 + 1] = ((x + 1) + y * width);
-                    terrainIndices[(x + y * (width - 1)) * 6 + 2] = (x + y * width);
-
-                    terrainIndices[(x + y * (width - 1)) * 6 + 3] = ((x + 1) + (y + 1) * width);
-                    terrainIndices[(x + y * (width - 1)) * 6 + 4] = (x + y * width);
-                    terrainIndices[(x + y * (width - 1)) * 6 + 5] = (x + (y + 1) * width);
-                }
-            }
-
-            // Build the physics stuff
-            TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray((width - 1) * (height - 1) * 2, terrainIndices, 3 * sizeof(int), realVerts.Count, realVerts, 3 * sizeof(float));
-                      
-            CollisionShape btTerrain = new BvhTriangleMeshShape(vertexArray, true, true);
-            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(0, new DefaultMotionState(Matrix.CreateTranslation(Vector3.Zero), Matrix.Identity), btTerrain, Vector3.Zero);
-
-
-            RigidBody = new RigidBody(rbInfo);
-
-            RigidBody.Translate(Position);
-
+            CreatePhysicsObject();
         }
         public override void Draw(GameTime gameTime, Effect effect)
         {
@@ -195,10 +158,142 @@ namespace IlluminatiEngine
                 //Game.GraphicsDevice.SetVertexBuffer(vb);
                 //Game.GraphicsDevice.Indices = ib;
                 //Game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, width * height, 0, (width - 1) * (height - 1) * 2);
-                Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, terrainIndices.GetRawArray(), 0, (width - 1) * (height - 1) * 2);
+                Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, indices, 0, (width - 1) * (height - 1) * 2);
             }
         }
 
+        public void CreatePhysicsObject()
+        {
+#if BULLETXNA
+            CreatePhysicsObjectBulletXNA();
+#endif
+#if BULLETSHARP
+            CreatePhysicsObjectBulletSharp();
+#endif
+#if JITTER
+            CreatePhysicsObjectJitter();
+#endif
+        }
+
+        public void CreatePhysicsObjectBulletXNA()
+        {
+            Color[] md = new Color[verts.Length];
+            heightMap.GetData<Color>(md);
+
+            BulletXNA.LinearMath.ObjectArray<Vector3> realVerts = new BulletXNA.LinearMath.ObjectArray<Vector3>(verts.Length);
+            BulletXNA.LinearMath.ObjectArray<int> terrainIndices = new BulletXNA.LinearMath.ObjectArray<int>((width - 1) * (height - 1) * 6);
+
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    int idx = x + y * width;
+                    verts[idx].Position = new Vector3(y, 0, x);
+                    realVerts[idx] = new Vector3(x, (md[idx].R / 256f) * 30f, y);
+                }
+            }
+
+            
+            for (int x = 0; x < width - 1; x++)
+            {
+                for (int y = 0; y < height - 1; y++)
+                {
+                    terrainIndices[(x + y * (width - 1)) * 6] = ((x + 1) + (y + 1) * width);
+                    terrainIndices[(x + y * (width - 1)) * 6 + 1] = ((x + 1) + y * width);
+                    terrainIndices[(x + y * (width - 1)) * 6 + 2] = (x + y * width);
+
+                    terrainIndices[(x + y * (width - 1)) * 6 + 3] = ((x + 1) + (y + 1) * width);
+                    terrainIndices[(x + y * (width - 1)) * 6 + 4] = (x + y * width);
+                    terrainIndices[(x + y * (width - 1)) * 6 + 5] = (x + (y + 1) * width);
+                }
+            }
+
+
+            // Build the physics stuff
+            BulletXNA.BulletCollision.TriangleIndexVertexArray vertexArray = new BulletXNA.BulletCollision.TriangleIndexVertexArray(((width - 1) * (height - 1) * 2), terrainIndices, 1, realVerts.Count, realVerts, 1);
+
+            BulletXNA.BulletCollision.CollisionShape btTerrain = new BulletXNA.BulletCollision.BvhTriangleMeshShape(vertexArray, true, true);
+            BulletXNA.BulletDynamics.RigidBodyConstructionInfo rbInfo = new BulletXNA.BulletDynamics.RigidBodyConstructionInfo(0, new BulletXNA.DefaultMotionState(Matrix.CreateTranslation(Vector3.Zero), Matrix.Identity), btTerrain, Vector3.Zero);
+
+            BulletXNA.BulletDynamics.RigidBody bulletXNARigidBody = new BulletXNA.BulletDynamics.RigidBody(rbInfo);
+
+            bulletXNARigidBody.Translate(Position);
+            indices = terrainIndices.GetRawArray();
+            RigidBody = bulletXNARigidBody;
+
+        }
+
+        public void CreatePhysicsObjectBulletSharp()
+        {
+            BulletSharp.TriangleIndexVertexArray vertexArray = new BulletSharp.TriangleIndexVertexArray();
+            BulletSharp.IndexedMesh mesh = new BulletSharp.IndexedMesh();
+
+            mesh.Allocate(verts.Length, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.Zero), (width - 1) * (height - 1) * 2, 3 * sizeof(int));
+            BulletSharp.DataStream vData = mesh.LockVerts();
+
+            Color[] md = new Color[verts.Length];
+            heightMap.GetData<Color>(md);
+
+            Vector3[] realVerts = new Vector3[verts.Length];
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    int idx = x + y * width;
+                    realVerts[idx] = new Vector3(x, (md[idx].R / 256f) * 30f, y);
+                }
+            }
+
+            for (int v = 0; v < realVerts.Length; v++)
+            {
+                vData.Write(realVerts[v].X);
+                vData.Write(realVerts[v].Y);
+                vData.Write(realVerts[v].Z);
+            }
+
+            indices = new int[(width - 1) * (height - 1) * 6];
+            for (int x = 0; x < width - 1; x++)
+            {
+                for (int y = 0; y < height - 1; y++)
+                {
+                    indices[(x + y * (width - 1)) * 6] = ((x + 1) + (y + 1) * width);
+                    indices[(x + y * (width - 1)) * 6 + 1] = ((x + 1) + y * width);
+                    indices[(x + y * (width - 1)) * 6 + 2] = (x + y * width);
+
+                    indices[(x + y * (width - 1)) * 6 + 3] = ((x + 1) + (y + 1) * width);
+                    indices[(x + y * (width - 1)) * 6 + 4] = (x + y * width);
+                    indices[(x + y * (width - 1)) * 6 + 5] = (x + (y + 1) * width);
+                }
+            }
+
+
+
+            BulletSharp.IntArray iData = mesh.TriangleIndices;
+            for (int idx = 0; idx < indices.Length; idx++)
+            {
+                iData[idx] = indices[idx];
+            }
+
+            vertexArray.AddIndexedMesh(mesh);
+            BulletSharp.CollisionShape btTerrain = new BulletSharp.BvhTriangleMeshShape(vertexArray, true);
+            BulletSharp.RigidBodyConstructionInfo rbInfo =
+                            new BulletSharp.RigidBodyConstructionInfo(0, new BulletSharp.DefaultMotionState(Matrix.Identity), btTerrain, Vector3.Zero);
+
+            BulletSharp.RigidBody bulletSharpRigidBody = new BulletSharp.RigidBody(rbInfo);
+
+            bulletSharpRigidBody.Translate(Position);
+
+            RigidBody = bulletSharpRigidBody;
+
+        }
+
+        public void CreatePhysicsObjectJitter()
+        {
+
+
+        }
 
 
     }
