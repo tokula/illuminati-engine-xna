@@ -60,20 +60,17 @@ namespace BasicTerrain
             GodRays.Exposure = .04f;
             GodRays.Weight = 1;
 
-            Water.Enabled = true;
+            renderer.ClearColor = Color.Red;
 
             UseBulletPhysics = true;  
         }
 
-        // create 125 (5x5x5) dynamic objects
+        // create 125 (3x3x3) dynamic objects
         int ArraySizeX = 3, ArraySizeY = 3, ArraySizeZ = 3;
 
-        // scaling of the objects (0.1 = 20 centimeter boxes )
         float StartPosX = -5;
         float StartPosY = -5;
         float StartPosZ = -3;
-
-
 
         public override void InitializePhysics()
         {

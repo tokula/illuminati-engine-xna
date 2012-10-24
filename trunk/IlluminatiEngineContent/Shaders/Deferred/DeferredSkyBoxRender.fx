@@ -70,7 +70,7 @@ PixelShaderOutput BasicShader(PS_INPUT Input) : COLOR0
     output.Depth.r = 1-(Input.SPos.z/Input.SPos.w);
 	output.Depth.a = 1;
     
-    return output;
+	return output;
 }
 
 technique Deferred 
