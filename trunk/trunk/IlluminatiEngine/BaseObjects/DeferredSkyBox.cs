@@ -19,7 +19,7 @@ namespace IlluminatiEngine
             this.textureAsset = textureAsset;
             mesh = "Models/SkyBox";
 
-            rotation = new Quaternion(0, 0, 0, 1);
+            rotation = Quaternion.Identity;
             scale = new Vector3(99, 99, 99);
             effect = "Shaders/Deferred/DeferredSkyBoxRender";
         }

@@ -154,13 +154,8 @@ namespace IlluminatiEngine
             }
 
             effect.CurrentTechnique.Passes[0].Apply();
-            //for (int pass = 0; pass < effect.CurrentTechnique.Passes.Count; pass++)
-            {
-                //Game.GraphicsDevice.SetVertexBuffer(vb);
-                //Game.GraphicsDevice.Indices = ib;
-                //Game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, width * height, 0, (width - 1) * (height - 1) * 2);
-                Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, indices, 0, (width - 1) * (height - 1) * 2);
-            }
+            Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, verts, 0, width * height, indices, 0, (width - 1) * (height - 1) * 2);
+            
         }
 
         public void CreatePhysicsObject()
