@@ -13,9 +13,11 @@ using IlluminatiEngine;
 using IlluminatiEngine.Renderer;
 using IlluminatiEngine.Renderer.Deferred;
 using IlluminatiEngine.Utilities;
-
+#if BULLETXNA
 using Bullet = BulletXNA;
 using BulletXNA.BulletCollision;
+#endif
+using IlluminatiEngine.BaseObjects;
 
 namespace BasicTerrain
 {
@@ -76,10 +78,21 @@ namespace BasicTerrain
         {
             base.InitializePhysics();
 
+#if JITTER            
+            InitializePhysicsJitter();
+#endif
+#if BULLETXNA
+            InitializePhysicsBulletXNA();
+#endif
+        }
+
+        public void InitializePhysicsBulletXNA()
+        {
+#if BULLETXNA
             CollisionFilterGroups colGroup = CollisionFilterGroups.DefaultFilter;
             CollisionFilterGroups colMask = CollisionFilterGroups.AllFilter;
 
-            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero,colGroup,colMask);
+            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero, colGroup, colMask);
             ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
             ball.TextureMaterials.Add("Textures/core1");
             ball.NormalMaterials.Add("Textures/core1Normal");
@@ -91,7 +104,7 @@ namespace BasicTerrain
             float mass = 1.0f;
 
             Bullet.BulletCollision.CollisionShape colShape = new Bullet.BulletCollision.BoxShape(Vector3.One);
-            
+
 
             //CollisionShapes.Add(colShape);
             Vector3 localInertia = Vector3.Zero;
@@ -121,10 +134,10 @@ namespace BasicTerrain
 
                         // using motionstate is recommended, it provides interpolation capabilities
                         // and only synchronizes 'active' objects
-                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform,Matrix.Identity), colShape, localInertia,colGroup,colMask);
+                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia, colGroup, colMask);
                         box.TextureMaterials.Add("Textures/BoxColor");
                         box.NormalMaterials.Add("Textures/BoxNormal");
-                        
+
                         box.TranslateAA(new Vector3(0, 7, 0));
                         boxs.Add(box);
                         Components.Add(box);
@@ -148,23 +161,123 @@ namespace BasicTerrain
 
                         // using motionstate is recommended, it provides interpolation capabilities
                         // and only synchronizes 'active' objects
-                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform,Matrix.Identity), colShape, localInertia,colGroup,colMask);
+                        BulletXNAObject box = new BulletXNAObject(this, "Models/Box", mass, new Bullet.DefaultMotionState(startTransform, Matrix.Identity), colShape, localInertia, colGroup, colMask);
                         box.TextureMaterials.Add("Textures/BoxColor01");
                         box.NormalMaterials.Add("Textures/BoxNormal01");
-                        
+
                         box.TranslateAA(new Vector3(0, 7, 0));
                         boxs.Add(box);
                         Components.Add(box);
                     }
                 }
             }
-
-            
-
-
             IsPhysicsEnabled = false;
+#endif
         }
 
+
+
+        public void InitializePhysicsJitter()
+        {
+#if JITTER
+            if (jitterPhysics == null)
+            {
+                JitterPhysicsComponent jitterPhysics2 = new JitterPhysicsComponent(this);
+            }
+
+
+            JitterObject ball = new JitterObject(this, "Models/Sphere");
+            ball.Shape = new Jitter.Collision.Shapes.SphereShape(1f);
+            ball.SetUpBulletPhysicsBody();
+            ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
+            ball.TextureMaterials.Add("Textures/core1");
+            ball.NormalMaterials.Add("Textures/core1Normal");
+            Components.Add(ball);
+
+            // create a few dynamic rigidbodies
+            float mass = 1.0f;
+
+            Jitter.Collision.Shapes.BoxShape colShape = new Jitter.Collision.Shapes.BoxShape(Jitter.LinearMath.JVector.One);
+
+
+            float start_x = StartPosX - ArraySizeX / 2;
+            float start_y = StartPosY;
+            float start_z = StartPosZ - ArraySizeZ / 2;
+
+            start_z -= 8;
+            Random rnd = new Random();
+
+            int k, i, j;
+            for (k = 0; k < ArraySizeY; k++)
+            {
+                for (i = 0; i < ArraySizeX; i++)
+                {
+                    for (j = 0; j < ArraySizeZ; j++)
+                    {
+                        Matrix startTransform = Matrix.CreateTranslation(
+                            2 * i + start_x,
+                            2 * k + start_y,
+                            2 * j + start_z
+                        );
+
+                        // using motionstate is recommended, it provides interpolation capabilities
+                        // and only synchronizes 'active' objects
+                        JitterObject box = new JitterObject(this, "Models/Box");
+                        box.Shape = new Jitter.Collision.Shapes.BoxShape(Jitter.LinearMath.JVector.One);
+                        box.SetUpBulletPhysicsBody();
+                        box.Position = startTransform.Translation;
+
+                        box.TextureMaterials.Add("Textures/BoxColor");
+                        box.NormalMaterials.Add("Textures/BoxNormal");
+                        
+                        box.TranslateAA(new Vector3(0, 7, 0));
+                        Components.Add(box);
+                    }
+                }
+            }
+
+            start_x -= 8;
+
+            for (k = 0; k < 2; k++)
+            {
+                for (i = 0; i < 2; i++)
+                {
+                    for (j = 0; j < 2; j++)
+                    {
+                        Matrix startTransform = Matrix.CreateTranslation(
+                            2 * i + start_x,
+                            2 * k + start_y,
+                            2 * j + start_z
+                        );
+
+                        // using motionstate is recommended, it provides interpolation capabilities
+                        // and only synchronizes 'active' objects
+                        JitterObject box = new JitterObject(this, "Models/Box");
+                        box.Shape = new Jitter.Collision.Shapes.BoxShape(Jitter.LinearMath.JVector.One);
+                        box.SetUpBulletPhysicsBody();
+                        box.Position = startTransform.Translation;
+                        box.TextureMaterials.Add("Textures/BoxColor01");
+                        box.NormalMaterials.Add("Textures/BoxNormal01");
+                        
+                        box.TranslateAA(new Vector3(0, 7, 0));
+                        Components.Add(box);
+                    }
+                }
+            }
+            IsPhysicsEnabled = false;
+#endif
+        }
+
+
+
+        public JitterPhysicsComponent jitterPhysics
+        {
+            get { return (JitterPhysicsComponent)Services.GetService(typeof(JitterPhysicsComponent)); }
+        }
+
+        
+        
+        
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -264,7 +377,14 @@ namespace BasicTerrain
             if (terrain.RigidBody != null && !tDone)
             {
                 tDone = true;
+#if BULLETXNA
                 ((BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent))).World.AddRigidBody(terrain.RigidBody as BulletXNA.BulletDynamics.RigidBody);
+#endif
+#if JITTER
+                Jitter.Dynamics.RigidBody jitterTerrain = terrain.RigidBody as Jitter.Dynamics.RigidBody;
+                jitterTerrain.IsStatic = true;
+                ((JitterPhysicsComponent)Services.GetService(typeof(JitterPhysicsComponent))).World.AddBody(jitterTerrain);
+#endif
             }
 
             base.Draw(gameTime);
