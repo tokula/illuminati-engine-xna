@@ -111,6 +111,8 @@ namespace IlluminatiEngine
                 enabled = ((BulletSharpPhysicsComponent)Services.GetService(typeof(BulletSharpPhysicsComponent))).Enabled; 
 #elif BULLETXNA
                 enabled = ((BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent))).Enabled;
+#elif JITTER
+                enabled = ((JitterPhysicsComponent)Services.GetService(typeof(JitterPhysicsComponent))).Enabled;
 #endif
                 return enabled;
         }
@@ -121,6 +123,8 @@ namespace IlluminatiEngine
 
 #elif BULLETXNA
             ((BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent))).Enabled = value;
+#elif JITTER
+            ((JitterPhysicsComponent)Services.GetService(typeof(JitterPhysicsComponent))).Enabled = value;
 #endif
             }
         }
@@ -215,6 +219,10 @@ namespace IlluminatiEngine
 #if BULLETXNA
             BulletXNAPhysicsComponent bulletPysXNA = new BulletXNAPhysicsComponent(this);
 #endif
+#if JITTER
+            JitterPhysicsComponent jitterPhysics = new JitterPhysicsComponent(this);  
+#endif
+        
         }
 
 #if BULLETSHARP
@@ -231,7 +239,13 @@ namespace IlluminatiEngine
             get { return (BulletXNAPhysicsComponent)Services.GetService(typeof(BulletXNAPhysicsComponent)); }
         }
 #endif
+#if JITTER
+        public JitterPhysicsComponent JitterPhysics
+        {
+            get { return (JitterPhysicsComponent)Services.GetService(typeof(JitterPhysicsComponent)); }
+        }
 
+#endif
 
         protected override void Initialize()
         {

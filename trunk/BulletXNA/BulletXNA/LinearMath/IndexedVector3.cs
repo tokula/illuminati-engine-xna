@@ -363,6 +363,14 @@ namespace BulletXNA.LinearMath
             return new IndexedVector3(value1.X - value2.X,value1.Y - value2.Y,value1.Z - value2.Z);
         }
 
+        public static void Swap(ref IndexedVector3 v1, ref IndexedVector3 v2)
+        {
+            IndexedVector3 vt = v1;
+            v1 = v2;
+            v2 = vt;
+        }
+
+
         public static void Add(ref IndexedVector3 output, ref IndexedVector3 value1, ref IndexedVector3 value2)
         {
             output.X = value1.X + value2.X;

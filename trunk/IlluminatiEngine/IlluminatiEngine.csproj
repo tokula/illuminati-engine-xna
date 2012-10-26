@@ -51,6 +51,10 @@
     <Reference Include="BulletSharp">
       <HintPath>.\BulletSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Jitter, Version=0.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalLibraries\Jitter\Windows\Jitter.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Kinect, Version=1.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -131,6 +135,8 @@
     <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintFixUp.cs" />
     <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapFootPrintTrim.cs" />
     <Compile Include="BaseObjects\GeoClipMapTerrain\GeoClipMapLayer.cs" />
+    <Compile Include="BaseObjects\JitterObject.cs" />
+    <Compile Include="BaseObjects\JitterPhysicsComponent.cs" />
     <Compile Include="Input\InputHandlerService.cs" />
     <Compile Include="Input\Managers\AccelerometerManager.cs" />
     <Compile Include="Input\Managers\GamePadManager.cs" />

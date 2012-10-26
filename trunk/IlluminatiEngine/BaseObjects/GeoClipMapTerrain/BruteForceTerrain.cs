@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using IlluminatiEngine.Kinect;
+using IlluminatiEngine.BaseObjects;
 
 
 namespace IlluminatiEngine
@@ -287,7 +288,47 @@ namespace IlluminatiEngine
 
         public void CreatePhysicsObjectJitter()
         {
+            Color[] md = new Color[verts.Length];
+            heightMap.GetData<Color>(md);
+            float[,] heightMapData = new float[width, height];
 
+            float maxHeight = 30f;
+
+            int counter = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    heightMapData[x,y] = (md[counter++].R / 256f) * maxHeight;
+                }
+            }
+
+            indices = new int[(width - 1) * (height - 1) * 6];
+            for (int x = 0; x < width - 1; x++)
+            {
+                for (int y = 0; y < height - 1; y++)
+                {
+                    indices[(x + y * (width - 1)) * 6] = ((x + 1) + (y + 1) * width);
+                    indices[(x + y * (width - 1)) * 6 + 1] = ((x + 1) + y * width);
+                    indices[(x + y * (width - 1)) * 6 + 2] = (x + y * width);
+
+                    indices[(x + y * (width - 1)) * 6 + 3] = ((x + 1) + (y + 1) * width);
+                    indices[(x + y * (width - 1)) * 6 + 4] = (x + y * width);
+                    indices[(x + y * (width - 1)) * 6 + 5] = (x + (y + 1) * width);
+                }
+            }
+
+            Jitter.Collision.Shapes.TerrainShape terrainShape = new Jitter.Collision.Shapes.TerrainShape(heightMapData, 1f, 1f);
+            Jitter.Dynamics.RigidBody jitterRigidBody = new Jitter.Dynamics.RigidBody(terrainShape);
+            //Position.Y += maxHeight / 2f;
+
+            Vector3 heightAdjustedPosition = Position;
+            //heightAdjustedPosition.Y -= maxHeight / 2f;
+
+            jitterRigidBody.Position = JitterObject.ToJitterVector(heightAdjustedPosition);
+
+
+            RigidBody = jitterRigidBody;
 
         }
 
