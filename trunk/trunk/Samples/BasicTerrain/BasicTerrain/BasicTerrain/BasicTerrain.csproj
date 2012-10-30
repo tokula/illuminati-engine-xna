@@ -60,10 +60,6 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BulletXNA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\BulletXNA\BulletXNA\bin\x86\Release\BulletXNA.dll</HintPath>
-    </Reference>
     <Reference Include="Jitter">
       <HintPath>..\..\..\..\IlluminatiEngine\ExternalLibraries\Jitter\Windows\Jitter.dll</HintPath>
     </Reference>
@@ -112,6 +108,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\BulletXNA\BulletXNA\BulletXNA-Windows.csproj">
+      <Project>{4E1937EE-3139-44CB-989D-F050BC099CE6}</Project>
+      <Name>BulletXNA-Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\IlluminatiEngineContent\IlluminatiEngineContent.contentproj">
       <Project>{0C60C361-4DFD-425D-8F12-198D8FBBCDB9}</Project>
       <Name>IlluminatiEngineContent</Name>
