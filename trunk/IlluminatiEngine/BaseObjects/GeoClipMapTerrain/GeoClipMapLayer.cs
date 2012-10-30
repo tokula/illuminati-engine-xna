@@ -8,8 +8,9 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+#if KINECT
 using IlluminatiEngine.Kinect;
-
+#endif
 namespace IlluminatiEngine
 {
     public class GeoClipMapLayer : BaseDeferredObject
@@ -312,7 +313,9 @@ namespace IlluminatiEngine
                     heightMap = AssetManager.GetAsset<Texture2D>(TerrainMap);
                 else
                 {
+#if KINECT
                     heightMap = ((KinectComponent)Game.Services.GetService(typeof(KinectComponent))).depthMap;
+#endif
 
                     if (heightMap == null)
                         return;

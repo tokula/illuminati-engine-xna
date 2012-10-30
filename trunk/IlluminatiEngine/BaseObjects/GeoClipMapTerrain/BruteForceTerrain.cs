@@ -6,8 +6,9 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+#if KINECT
 using IlluminatiEngine.Kinect;
+#endif
 using IlluminatiEngine.BaseObjects;
 
 
@@ -83,7 +84,7 @@ namespace IlluminatiEngine
         {
             if (heightMap == null)
             {
-#if WINDOWS
+#if WINDOWS && KINECT
                 if (KinectFeed)
                 {
                     heightMap = ((KinectComponent)Game.Services.GetService(typeof(KinectComponent))).depthMap;

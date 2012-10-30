@@ -7,8 +7,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+#if KINECT
 using IlluminatiEngine.Kinect;
-
+#endif
 namespace IlluminatiEngine
 {
     // http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter02.html
