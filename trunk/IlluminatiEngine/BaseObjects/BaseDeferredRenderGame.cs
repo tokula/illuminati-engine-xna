@@ -333,7 +333,11 @@ namespace IlluminatiEngine
         protected override void EndDraw()
         {
             if (!renderer.StopRender && !firstFrameComplete)
-                firstFrameComplete = true;            
+                firstFrameComplete = true;
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
+            spriteBatch.Draw(assetManager.GetAsset<Texture2D>("EngineIcon"), new Rectangle(GraphicsDevice.Viewport.TitleSafeArea.Right - 70, GraphicsDevice.Viewport.TitleSafeArea.Bottom - 70, 64, 64), new Color(1, 1, 1, .25f));
+            spriteBatch.End();
 
            base.EndDraw();
         }
