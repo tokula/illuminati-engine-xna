@@ -39,9 +39,7 @@ namespace BulletXNA.LinearMath
 		// Fields
 		private const int _defaultCapacity = 4;
 		private static T[] _emptyArray;
-
-        // really dodgy 
-		public T[] _items;
+		private T[] _items;
 		private int _size;
 		private object _syncRoot;
 		private int _version;

@@ -470,6 +470,28 @@ namespace IlluminatiEngine.BaseObjects
         }
 
 
+        public void DrawCylinder(float radius, float halfHeight, int upAxis, ref IndexedMatrix transform, ref IndexedVector3 color)
+        {
+        }
+        public void DrawCone(float radius, float height, int upAxis, ref IndexedMatrix transform, ref IndexedVector3 color)
+        {
+        }
+        public void DrawPlane(ref IndexedVector3 planeNormal, float planeConst, ref IndexedMatrix transform, ref IndexedVector3 color)
+        {
+        }
+
+        public void DrawSphere(float radius, ref IndexedMatrix transform, ref IndexedVector3 color)
+        {
+        }
+        public void DrawCapsule(float radius, float halfHeight, int upAxis, ref IndexedMatrix transform, ref IndexedVector3 color)
+        {
+        }
+
+        public void DrawBox(ref IndexedVector3 bbMin, ref IndexedVector3 bbMax, ref IndexedVector3 color)
+        {
+        }
+
+
 
         private const int m_lineVertexMaxSize = 500000;
 

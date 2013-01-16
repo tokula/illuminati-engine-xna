@@ -21,9 +21,9 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#define DEBUG_CHECK_DEQUANTIZATION
-#define DEBUG_TREE_BUILDING
-#define VISUALLY_ANALYZE_BVH
+//#define DEBUG_CHECK_DEQUANTIZATION
+//#define DEBUG_TREE_BUILDING
+//#define VISUALLY_ANALYZE_BVH
 #define RAYAABB2
 
 using System;
@@ -44,7 +44,7 @@ namespace BulletXNA.BulletCollision
     ///Node can be used for leafnode or internal node. Leafnodes can point to 32-bit triangle index (non-negative range).
     ///
 
-    public struct QuantizedBvhNode
+    public class QuantizedBvhNode
     {
         //12 bytes - hah yeah right...
         public UShortVector3 m_quantizedAabbMin;
@@ -52,6 +52,9 @@ namespace BulletXNA.BulletCollision
 
         //4 bytes
         public int m_escapeIndexOrTriangleIndex;
+
+        public int m_leftChildIndex = -1;
+        public int m_rightChildIndex = -1;
 
         public bool IsLeafNode()
         {
@@ -67,12 +70,17 @@ namespace BulletXNA.BulletCollision
         public int GetTriangleIndex()
         {
             // relax this as we're using it in a cheat on the recursive walker.
-            //Debug.Assert(isLeafNode());
+            Debug.Assert(IsLeafNode());
             // Get only the lower bits where the triangle index is stored
-            int result = (m_escapeIndexOrTriangleIndex & ~((~0) << (31 - QuantizedBvh.MAX_NUM_PARTS_IN_BITS)));
-            int result2 = (m_escapeIndexOrTriangleIndex & ~((~0) << (31 - QuantizedBvh.MAX_NUM_PARTS_IN_BITS)));
+            //int result = (m_escapeIndexOrTriangleIndex & ~((~0) << (31 - QuantizedBvh.MAX_NUM_PARTS_IN_BITS)));
+            //int result2 = (m_escapeIndexOrTriangleIndex & ~((~0) << (31 - QuantizedBvh.MAX_NUM_PARTS_IN_BITS)));
 
-            return result;
+            uint x=0;
+            uint y = (~(x&0))<<(31-QuantizedBvh.MAX_NUM_PARTS_IN_BITS);
+            return (int)(m_escapeIndexOrTriangleIndex & ~(y));
+
+
+//            return result;
         }
         public int GetPartId()
         {
@@ -196,22 +204,30 @@ namespace BulletXNA.BulletCollision
         {
             if (m_useQuantization)
             {
-                Quantize(out m_quantizedContiguousNodes._items[nodeIndex].m_quantizedAabbMin, ref aabbMin, false);
+                QuantizedBvhNode bvh = m_quantizedContiguousNodes[nodeIndex];
+                Quantize(out bvh.m_quantizedAabbMin, ref aabbMin, false);
+                m_quantizedContiguousNodes[nodeIndex] = bvh;
             }
             else
             {
-                m_contiguousNodes._items[nodeIndex].m_aabbMinOrg = aabbMin;
+                OptimizedBvhNode bvh = m_contiguousNodes[nodeIndex];
+                bvh.m_aabbMinOrg = aabbMin;
+                m_contiguousNodes[nodeIndex] = bvh;
             }
         }
         public void SetInternalNodeAabbMax(int nodeIndex, ref IndexedVector3 aabbMax)
         {
             if (m_useQuantization)
             {
-                Quantize(out m_quantizedContiguousNodes._items[nodeIndex].m_quantizedAabbMax, ref aabbMax, true);
+                QuantizedBvhNode bvh = m_quantizedContiguousNodes[nodeIndex];
+                Quantize(out bvh.m_quantizedAabbMax, ref aabbMax, true);
+                m_quantizedContiguousNodes[nodeIndex] = bvh;
             }
             else
             {
-                m_contiguousNodes._items[nodeIndex].m_aabbMaxOrg = aabbMax;
+                OptimizedBvhNode bvh = m_contiguousNodes[nodeIndex];
+                bvh.m_aabbMaxOrg = aabbMax;
+                m_contiguousNodes[nodeIndex] = bvh;
             }
         }
 
@@ -220,7 +236,7 @@ namespace BulletXNA.BulletCollision
             if (m_useQuantization)
             {
                 IndexedVector3 output;
-                UnQuantize(ref m_quantizedLeafNodes._items[nodeIndex].m_quantizedAabbMin, out output);
+                UnQuantize(ref m_quantizedLeafNodes[nodeIndex].m_quantizedAabbMin, out output);
                 return output;
             }
             //non-quantized
@@ -232,7 +248,7 @@ namespace BulletXNA.BulletCollision
             if (m_useQuantization)
             {
                 IndexedVector3 output;
-                UnQuantize(ref m_quantizedLeafNodes._items[nodeIndex].m_quantizedAabbMax, out output);
+                UnQuantize(ref m_quantizedLeafNodes[nodeIndex].m_quantizedAabbMax, out output);
                 return output;
             }
             //non-quantized
@@ -243,11 +259,11 @@ namespace BulletXNA.BulletCollision
         {
             if (m_useQuantization)
             {
-                m_quantizedContiguousNodes._items[nodeIndex].m_escapeIndexOrTriangleIndex = -escapeIndex;
+                m_quantizedContiguousNodes[nodeIndex].m_escapeIndexOrTriangleIndex = -escapeIndex;
             }
             else
             {
-                m_contiguousNodes._items[nodeIndex].m_escapeIndex = escapeIndex;
+                m_contiguousNodes[nodeIndex].m_escapeIndex = escapeIndex;
             }
 
 
@@ -267,16 +283,18 @@ namespace BulletXNA.BulletCollision
                 Quantize(out quantizedAabbMin, ref newAabbMin, false);
                 Quantize(out quantizedAabbMax, ref newAabbMax, true);
 
-                m_quantizedContiguousNodes._items[nodeIndex].m_quantizedAabbMin.Min(ref quantizedAabbMin);
-                m_quantizedContiguousNodes._items[nodeIndex].m_quantizedAabbMax.Max(ref quantizedAabbMax);
+                QuantizedBvhNode node = m_quantizedContiguousNodes[nodeIndex];
+                node.m_quantizedAabbMin.Min(ref quantizedAabbMin);
+                node.m_quantizedAabbMax.Max(ref quantizedAabbMax);
+                m_quantizedContiguousNodes[nodeIndex] = node;
             }
             else
             {
                 OptimizedBvhNode node = m_contiguousNodes[nodeIndex];
                 //non-quantized
                 MathUtil.VectorMin(ref newAabbMin, ref node.m_aabbMinOrg);
-                MathUtil.VectorMin(ref newAabbMax, ref node.m_aabbMaxOrg);
-                m_contiguousNodes._items[nodeIndex] = node;
+                MathUtil.VectorMax(ref newAabbMax, ref node.m_aabbMaxOrg);
+                m_contiguousNodes[nodeIndex] = node;
             }
         }
 
@@ -284,11 +302,15 @@ namespace BulletXNA.BulletCollision
         {
             if (m_useQuantization)
             {
-                m_quantizedLeafNodes.Swap(firstIndex, secondIndex);
+                QuantizedBvhNode tmp = m_quantizedLeafNodes[firstIndex];
+                m_quantizedLeafNodes[firstIndex] = m_quantizedLeafNodes[secondIndex];
+                m_quantizedLeafNodes[secondIndex] = tmp;
             }
             else
             {
-                m_leafNodes.Swap(firstIndex, secondIndex);
+                OptimizedBvhNode tmp = m_leafNodes[firstIndex];
+                m_leafNodes[firstIndex] = m_leafNodes[secondIndex];
+                m_leafNodes[secondIndex] = tmp;
             }
         }
 
@@ -296,11 +318,11 @@ namespace BulletXNA.BulletCollision
         {
             if (m_useQuantization)
             {
-                m_quantizedContiguousNodes._items[internalNode] = m_quantizedLeafNodes._items[leafNodeIndex];
+                m_quantizedContiguousNodes[internalNode] = m_quantizedLeafNodes[leafNodeIndex];
             }
             else
             {
-                m_contiguousNodes._items[internalNode] = m_leafNodes._items[leafNodeIndex];
+                m_contiguousNodes[internalNode] = m_leafNodes[leafNodeIndex];
             }
         }
 
@@ -351,6 +373,8 @@ namespace BulletXNA.BulletCollision
                 MergeInternalNodeAabb(m_curNodeIndex, GetAabbMin(i), GetAabbMax(i));
             }
 
+            int lastIndex = m_curNodeIndex;
+
             m_curNodeIndex++;
 
 
@@ -358,10 +382,14 @@ namespace BulletXNA.BulletCollision
 
             int leftChildNodexIndex = m_curNodeIndex;
 
+            m_quantizedContiguousNodes[lastIndex].m_leftChildIndex = leftChildNodexIndex;
+
+
             //build left child tree
             BuildTree(startIndex, splitIndex);
 
             int rightChildNodexIndex = m_curNodeIndex;
+            m_quantizedContiguousNodes[lastIndex].m_rightChildIndex = rightChildNodexIndex;
             //build right child tree
             BuildTree(splitIndex, endIndex);
 
@@ -681,7 +709,7 @@ namespace BulletXNA.BulletCollision
                 //#define VISUALLY_ANALYZE_BVH 1
 #if VISUALLY_ANALYZE_BVH
                 //some code snippet to debugDraw aabb, to visually analyze bvh structure
-                int drawPatch = 9;
+                int drawPatch = 1;
                 //need some global access to a debugDrawer
                 IDebugDraw debugDrawerPtr = BulletGlobals.gDebugDraw;
                 //IDebugDraw debugDrawerPtr = null;
@@ -694,6 +722,8 @@ namespace BulletXNA.BulletCollision
                     UnQuantize(ref rootNode.m_quantizedAabbMax, out aabbMax);
                     IndexedVector3 color = new IndexedVector3(1, 0, 0);
                     debugDrawerPtr.DrawAabb(ref aabbMin, ref aabbMax, ref color);
+                    //IndexedVector3 offset = new IndexedVector3(0, 2, 0);
+                    //debugDrawerPtr.DrawAabb(aabbMin+offset, aabbMax+offset, color);
                     //Console.Out.WriteLine(String.Format("min[{0},{1},{2}] max[{3},{4},{5}]\n", aabbMin.X, aabbMin.Y, aabbMin.Z, aabbMax.X, aabbMax.Y, aabbMax.Z));
 
 
@@ -882,15 +912,19 @@ namespace BulletXNA.BulletCollision
                     //QuantizedBvhNode leftChildNode = currentNode + 1;
                     // Not sure bout thie replacement... but avoids pointer arithmetic
                     // this is broken ...
-                    int nodeIndex = currentNode.GetEscapeIndex() + 1;
-                    QuantizedBvhNode leftChildNode = m_quantizedContiguousNodes[nodeIndex];
+                    //int nodeIndex = currentNode.GetTriangleIndex() + 1;
+                    if(currentNode.m_leftChildIndex > -1 && currentNode.m_leftChildIndex < m_quantizedContiguousNodes.Count)
+                    {
+                        QuantizedBvhNode leftChildNode = m_quantizedContiguousNodes[currentNode.m_leftChildIndex];
+                        WalkRecursiveQuantizedTreeAgainstQueryAabb(ref leftChildNode, nodeCallback, ref quantizedQueryAabbMin, ref quantizedQueryAabbMax);
+                    }
 
-                    WalkRecursiveQuantizedTreeAgainstQueryAabb(ref leftChildNode, nodeCallback, ref quantizedQueryAabbMin, ref quantizedQueryAabbMax);
-
-                    int newIndex = leftChildNode.IsLeafNode() ? leftChildNode.GetTriangleIndex() + 1 : leftChildNode.GetTriangleIndex() + leftChildNode.GetEscapeIndex();
-                    QuantizedBvhNode rightChildNode = m_quantizedContiguousNodes[newIndex];
-
-                    WalkRecursiveQuantizedTreeAgainstQueryAabb(ref rightChildNode, nodeCallback, ref quantizedQueryAabbMin, ref quantizedQueryAabbMax);
+                    if(currentNode.m_rightChildIndex > -1 && currentNode.m_rightChildIndex < m_quantizedContiguousNodes.Count)
+                    {
+                        //int newIndex = leftChildNode.IsLeafNode() ? leftChildNode.GetTriangleIndex() + 1 : leftChildNode.GetTriangleIndex() + leftChildNode.GetEscapeIndex();
+                        QuantizedBvhNode rightChildNode = m_quantizedContiguousNodes[currentNode.m_rightChildIndex];
+                        WalkRecursiveQuantizedTreeAgainstQueryAabb(ref rightChildNode, nodeCallback, ref quantizedQueryAabbMin, ref quantizedQueryAabbMax);
+                    }
                 }
             }
         }

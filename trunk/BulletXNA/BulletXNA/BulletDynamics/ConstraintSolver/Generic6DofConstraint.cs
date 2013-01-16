@@ -717,9 +717,10 @@ namespace BulletXNA.BulletDynamics
 
 		public void GetAngularLowerLimit(out IndexedVector3 angularLower)
 		{
-			angularLower = new IndexedVector3(m_angularLimits[0].m_loLimit,
-			angularLower.Y = m_angularLimits[1].m_loLimit,
-			angularLower.Z = m_angularLimits[2].m_loLimit);
+			angularLower = new IndexedVector3(
+			m_angularLimits[0].m_loLimit,
+			m_angularLimits[1].m_loLimit,
+			m_angularLimits[2].m_loLimit);
 		}
 
 		public void GetAngularUpperLimit(out IndexedVector3 angularUpper)
@@ -739,9 +740,9 @@ namespace BulletXNA.BulletDynamics
 			IndexedVector3 xAxis = IndexedVector3.Cross(yAxis, zAxis); // we want right coordinate system
 
 			IndexedMatrix frameInW = IndexedMatrix.Identity;
-            frameInW._basis = new IndexedBasisMatrix(xAxis[0], yAxis[0], zAxis[0],
-                                    xAxis[1], yAxis[1], zAxis[1],
-                                   xAxis[2], yAxis[2], zAxis[2]);
+            frameInW._basis = new IndexedBasisMatrix(xAxis.X, yAxis.X, zAxis.X,
+                                    xAxis.Y, yAxis.Y, zAxis.Y,
+                                   xAxis.Z, yAxis.Z, zAxis.Z);
 
 			// now get constraint frame in local coordinate systems
             m_frameInA = m_rbA.GetCenterOfMassTransform().Inverse() * frameInW;

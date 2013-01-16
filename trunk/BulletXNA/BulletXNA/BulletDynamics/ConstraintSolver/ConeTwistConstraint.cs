@@ -355,6 +355,11 @@ namespace BulletXNA.BulletDynamics
 			SetLimit(_swingSpan1, _swingSpan2, _twistSpan, 1f, .3f, 1f);
 		}
 
+        public void SetLimit(float _swingSpan1, float _swingSpan2, float _twistSpan, float _softness)
+        {
+            SetLimit(_swingSpan1, _swingSpan2, _twistSpan, _softness, .3f, 1f);
+        }
+
 		public void SetLimit(float _swingSpan1, float _swingSpan2, float _twistSpan, float _softness, float _biasFactor, float _relaxationFactor)
 		{
 			m_swingSpan1 = _swingSpan1;
@@ -1090,9 +1095,9 @@ namespace BulletXNA.BulletDynamics
             IndexedVector3 omegaB = IndexedVector3.Zero; bodyB.InternalGetAngularVelocity(ref omegaB);
 			IndexedMatrix trAPred;
 			IndexedVector3 zerovec = new IndexedVector3(0,0,0);
-			TransformUtil.IntegrateTransform(trACur, zerovec, omegaA, timeStep, out trAPred);
+			TransformUtil.IntegrateTransform(ref trACur, ref zerovec, ref omegaA, timeStep, out trAPred);
 			IndexedMatrix trBPred;
-			TransformUtil.IntegrateTransform(trBCur, zerovec, omegaB, timeStep, out trBPred);
+			TransformUtil.IntegrateTransform(ref trBCur, ref zerovec, ref omegaB, timeStep, out trBPred);
 
 			// compute desired transforms in world
 			IndexedMatrix trPose = IndexedMatrix.CreateFromQuaternion(m_qTarget);

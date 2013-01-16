@@ -283,52 +283,6 @@ namespace BulletXNA
         //            Debug.Assert(false);
         //        }
 
-
-        public static float VectorComponent(IndexedVector4 v, int i)
-        {
-            return VectorComponent(ref v, i);
-        }
-
-        public static float VectorComponent(ref IndexedVector4 v, int i)
-        {
-            switch (i)
-            {
-                case 0:
-                    return v.X;
-                case 1:
-                    return v.Y;
-                case 2:
-                    return v.Z;
-                case 3:
-                    return v.W;
-                default:
-                    Debug.Assert(false);
-                    return 0.0f;
-            }
-        }
-
-
-
-        public static void VectorComponent(ref IndexedVector4 v, int i, float f)
-        {
-            switch (i)
-            {
-                case 0:
-                    v.X = f;
-                    return;
-                case 1:
-                    v.Y = f;
-                    return;
-                case 2:
-                    v.Z = f;
-                    return;
-                case 3:
-                    v.W = f;
-                    return;
-            }
-            Debug.Assert(false);
-        }
-
         //        public static IndexedMatrix AbsoluteMatrix(IndexedMatrix input)
         //        {
         //            return AbsoluteMatrix(ref input);
@@ -974,50 +928,43 @@ namespace BulletXNA
             v1 = new IndexedVector3(vecin.Z, 0f, -vecin.X);
             v2 = new IndexedVector3(-vecin.Y, vecin.X, 0f);
         }
+
+        [Conditional("DEBUG")]
         public static void SanityCheckVector(IndexedVector3 v)
         {
-#if DEBUG
             SanityCheckVector(ref v);
-#endif
         }
+
+        [Conditional("DEBUG")]
         public static void ZeroCheckVector(IndexedVector3 v)
         {
-#if DEBUG
-
             ZeroCheckVector(ref v);
-#endif
         }
 
+        [Conditional("DEBUG")]
         public static void ZeroCheckVector(ref IndexedVector3 v)
         {
-#if DEBUG
-
             if (FuzzyZero(v.LengthSquared()))
             {
                 int ibreak = 0;
                 //Debug.Assert(false);
             }
-#endif
         }
+
+        [Conditional("DEBUG")]
         public static void SanityCheckVector(ref IndexedVector3 v)
         {
-#if DEBUG
-
             if (float.IsNaN(v.X) || float.IsNaN(v.Y) || float.IsNaN(v.Z))
             {
                 int ibreak = 0;
                 Debug.Assert(false);
             }
-#endif
         }
 
+        [Conditional("DEBUG")]
         public static void SanityCheckFloat(float f)
         {
-#if DEBUG
-
             Debug.Assert(!float.IsInfinity(f) && !float.IsNaN(f));
-#endif
-
         }
 
         //        public static void Vector3FromFloat(out IndexedVector3 v, float[] fa)
