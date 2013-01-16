@@ -50,7 +50,7 @@ namespace BulletXNA.BulletCollision
             float val = halfExtents[GetUpAxis()];
 	        halfExtents[GetUpAxis()] = val +GetHalfHeight();
 
-	        float margin = CollisionMargin.CONVEX_DISTANCE_MARGIN;
+	        const float margin = CollisionMargin.CONVEX_DISTANCE_MARGIN;
 
 	        float lx=2f*(halfExtents.X+margin);
 	        float ly=2f*(halfExtents.Y+margin);
@@ -186,9 +186,9 @@ namespace BulletXNA.BulletCollision
 	        halfExtents += new IndexedVector3(GetMargin());
             IndexedBasisMatrix abs_b = trans._basis.Absolute();
             IndexedVector3 center = trans._origin;
-            IndexedVector3 extent = new IndexedVector3(abs_b[0].Dot(ref halfExtents),
-                                           abs_b[1].Dot(ref halfExtents),
-                                           abs_b[2].Dot(ref halfExtents));
+            IndexedVector3 extent = new IndexedVector3(abs_b._el0.Dot(ref halfExtents),
+                                           abs_b._el1.Dot(ref halfExtents),
+                                           abs_b._el2.Dot(ref halfExtents));
     		
 	        aabbMin = center - extent;
 	        aabbMax = center + extent;

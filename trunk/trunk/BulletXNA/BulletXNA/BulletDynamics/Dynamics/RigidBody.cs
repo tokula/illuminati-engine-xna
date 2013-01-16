@@ -194,7 +194,7 @@ namespace BulletXNA.BulletDynamics
 				MathUtil.PrintVector3(BulletGlobals.g_streamWriter,"AngularVel",m_angularVelocity);
 
 			}
-            TransformUtil.IntegrateTransform(m_worldTransform,m_linearVelocity,m_angularVelocity,timeStep,out predictedTransform);
+            TransformUtil.IntegrateTransform(ref m_worldTransform, ref m_linearVelocity, ref m_angularVelocity, timeStep, out predictedTransform);
             MathUtil.SanityCheckVector(m_worldTransform._basis[1]);
 			if (BulletGlobals.g_streamWriter != null && BulletGlobals.debugRigidBody)
 			{
@@ -267,11 +267,6 @@ namespace BulletXNA.BulletDynamics
 	    {
 		    return m_linearDamping;
 	    }
-
-        public void SetLinearDamping(float val)
-        {
-            m_linearDamping = MathUtil.Clamp(val, 0f, 1f);
-        }
 
 	    public float GetAngularDamping()
 	    {
@@ -553,7 +548,7 @@ namespace BulletXNA.BulletDynamics
 	    //Optimization for the iterative solver: avoid calculating constant terms involving inertia, normal, relative position
         public void InternalApplyImpulse(IndexedVector3 linearComponent, IndexedVector3 angularComponent, float impulseMagnitude,String caller)
         {
-            if (impulseMagnitude > 4f)
+            if (impulseMagnitude > 20f)
             {
                 int ibreak = 0;
             }
@@ -646,6 +641,11 @@ namespace BulletXNA.BulletDynamics
 
 		    //for kinematic objects, we could also use use:
 		    //		return 	(m_worldTransform(rel_pos) - m_interpolationWorldTransform(rel_pos)) / m_kinematicTimeStep;
+	    }
+
+	    public void Translate(ref IndexedVector3 v) 
+	    {
+		    m_worldTransform._origin += v; 
 	    }
 
 	
@@ -970,8 +970,8 @@ namespace BulletXNA.BulletDynamics
 		    {
 			    SetLinearVelocity(GetLinearVelocity()+ m_deltaLinearVelocity);
 			    SetAngularVelocity(GetAngularVelocity()+m_deltaAngularVelocity);
-			    m_deltaLinearVelocity = IndexedVector3.Zero;
-                m_deltaAngularVelocity = IndexedVector3.Zero;
+			    //m_deltaLinearVelocity = IndexedVector3.Zero;
+                //m_deltaAngularVelocity = IndexedVector3.Zero;
 			    //m_originalBody->setCompanionId(-1);
 		    }
 	    }

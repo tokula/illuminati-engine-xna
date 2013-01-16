@@ -434,7 +434,7 @@ namespace BulletXNA.BulletCollision
 
             ///debug drawing of the overlapping triangles
             ///
-#if true
+#if false
             if (m_dispatchInfoPtr != null && m_dispatchInfoPtr.getDebugDraw() != null && ((m_dispatchInfoPtr.getDebugDraw().GetDebugMode() & DebugDrawModes.DBG_DrawWireframe) > 0))
             {
                 IndexedVector3 color = new IndexedVector3(1, 1, 0);

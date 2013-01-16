@@ -374,46 +374,24 @@ namespace BulletXNA.BulletDynamics
         public override void DebugDrawWorld()
         {
             BulletGlobals.StartProfile("debugDrawWorld");
-            base.DebugDrawWorld();
-            //if (getDebugDrawer() != null && ((getDebugDrawer().getDebugMode() & DebugDrawModes.DBG_DrawContactPoints) != 0))
-            //{
-            //    int numManifolds = getDispatcher().getNumManifolds();
-            //    IndexedVector3 color = IndexedVector3.Zero;
-            //    for (int i=0;i<numManifolds;i++)
-            //    {
-            //        PersistentManifold contactManifold = getDispatcher().getManifoldByIndexInternal(i);
-            //        //btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold.getBody0());
-            //        //btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold.getBody1());
 
-            //        int numContacts = contactManifold.getNumContacts();
-            //        for (int j=0;j<numContacts;j++)
-            //        {
-            //            ManifoldPoint cp = contactManifold.getContactPoint(j);
-            //            getDebugDrawer().drawContactPoint(cp.getPositionWorldOnB(),cp.getNormalWorldOnB(),cp.getDistance(),cp.getLifeTime(),color);
-            //        }
-            //    }
-            //}
-            bool drawConstraints = false;
+            base.DebugDrawWorld();
+
             if (GetDebugDrawer() != null)
             {
                 DebugDrawModes mode = GetDebugDrawer().GetDebugMode();
                 if ((mode & (DebugDrawModes.DBG_DrawConstraints | DebugDrawModes.DBG_DrawConstraintLimits)) != 0)
                 {
-                    drawConstraints = true;
-
-                    if (drawConstraints)
+                    for (int i = GetNumConstraints() - 1; i >= 0; i--)
                     {
-                        for (int i = GetNumConstraints() - 1; i >= 0; i--)
-                        {
-                            TypedConstraint constraint = GetConstraint(i);
-                            DrawHelper.DebugDrawConstraint(constraint, GetDebugDrawer());
-                        }
+                        TypedConstraint constraint = GetConstraint(i);
+                        DrawHelper.DebugDrawConstraint(constraint, GetDebugDrawer());
                     }
                 }
                 if (mode != 0)
                 {
-                    int LengthSquared = m_actions.Count;
-                    for (int i = 0; i < LengthSquared; ++i)
+                    int actionsCount = m_actions.Count;
+                    for (int i = 0; i < actionsCount; ++i)
                     {
                         m_actions[i].DebugDraw(m_debugDrawer);
                     }
@@ -952,14 +930,14 @@ namespace BulletXNA.BulletDynamics
             m_manifolds.Resize(0);
             m_constraints.Resize(0);
         }
-        public virtual void ProcessIsland(ObjectArray<CollisionObject> bodies, int numBodies, PersistentManifoldArray manifolds, int numManifolds, int islandId)
+        public virtual void ProcessIsland(ObjectArray<CollisionObject> bodies, int numBodies, PersistentManifoldArray manifolds, int startManifold, int numManifolds, int islandId)
         {
             if (islandId < 0)
             {
                 if (numManifolds + m_numConstraints > 0)
                 {
                     ///we don't split islands, so all constraints/contact manifolds/bodies are passed into the solver regardless the island id
-                    m_solver.SolveGroup(bodies, numBodies, manifolds, numManifolds, m_sortedConstraints, 0, m_numConstraints, m_solverInfo, m_debugDrawer, m_dispatcher);
+                    m_solver.SolveGroup(bodies, numBodies, manifolds, startManifold, numManifolds, m_sortedConstraints, 0, m_numConstraints, m_solverInfo, m_debugDrawer, m_dispatcher);
                 }
             }
             else
@@ -992,7 +970,7 @@ namespace BulletXNA.BulletDynamics
                     ///only call solveGroup if there is some work: avoid virtual function call, its overhead can be excessive
                     if (numManifolds + numCurConstraints > 0)
                     {
-                        m_solver.SolveGroup(bodies, numBodies, manifolds, numManifolds, m_sortedConstraints, startConstraint, numCurConstraints, m_solverInfo, m_debugDrawer, m_dispatcher);
+                        m_solver.SolveGroup(bodies, numBodies, manifolds, startManifold, numManifolds, m_sortedConstraints, startConstraint, numCurConstraints, m_solverInfo, m_debugDrawer, m_dispatcher);
                     }
                 }
                 else
@@ -1001,7 +979,8 @@ namespace BulletXNA.BulletDynamics
                     {
                         m_bodies.Add(bodies[i]);
                     }
-                    for (i = 0; i < numManifolds; i++)
+                    int lastManifold = startManifold + numManifolds;
+                    for (i = startManifold; i < lastManifold; i++)
                     {
                         m_manifolds.Add(manifolds[i]);
                     }
@@ -1026,7 +1005,7 @@ namespace BulletXNA.BulletDynamics
         {
             if (m_manifolds.Count + m_constraints.Count > 0)
             {
-                m_solver.SolveGroup(m_bodies, m_bodies.Count, m_manifolds, m_manifolds.Count, m_constraints, 0, m_constraints.Count, m_solverInfo, m_debugDrawer, m_dispatcher);
+                m_solver.SolveGroup(m_bodies, m_bodies.Count, m_manifolds, 0, m_manifolds.Count, m_constraints, 0, m_constraints.Count, m_solverInfo, m_debugDrawer, m_dispatcher);
             }
             m_bodies.Clear();
             m_manifolds.Clear();
