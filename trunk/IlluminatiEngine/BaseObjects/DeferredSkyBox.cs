@@ -40,7 +40,7 @@ namespace IlluminatiEngine
                 }
 
                 Matrix World = Matrix.CreateScale(Scale) *
-                                Matrix.CreateFromQuaternion(rotation) *
+                                Matrix.CreateFromQuaternion(rotation) * 
                                 Matrix.CreateTranslation(Camera.Position);
 
                 effect.Parameters["World"].SetValue(World);

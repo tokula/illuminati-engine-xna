@@ -21,6 +21,7 @@ namespace IlluminatiEngine.Renderer.Deferred
         public RenderTarget2D lightMap;
         public RenderTarget2D finalBackBuffer;
         //RenderTarget2D db2;
+        public RenderTarget2D blendedDepthBuffer;
         public RenderTarget2D finalDepthBuffer;
 
         Effect clearDeferredBufferEffect;
@@ -83,11 +84,12 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             finalBackBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             finalDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
+            blendedDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rg32, DepthFormat.Depth24Stencil8);
 
             halfPixel = -new Vector2(.5f / (float)GraphicsDevice.Viewport.Width,
                                      .5f / (float)GraphicsDevice.Viewport.Height);
 
-            w = GraphicsDevice.Viewport.Width / 5;
+            w = GraphicsDevice.Viewport.Width / 7;
             h = GraphicsDevice.Viewport.Height / 5;
 
             t = new Texture2D(GraphicsDevice, 1, 1);
@@ -133,8 +135,9 @@ namespace IlluminatiEngine.Renderer.Deferred
             {
                 DeferredShaddows(gameTime);
                 DeferredLighting(gameTime);
-            
-                GraphicsDevice.SetRenderTargets(finalBackBuffer);
+
+
+                GraphicsDevice.SetRenderTargets(finalBackBuffer, blendedDepthBuffer);
                 DrawDeferred();
 
                 int cnt = Game.Components.Count;
@@ -145,6 +148,9 @@ namespace IlluminatiEngine.Renderer.Deferred
                 }
 
                 GraphicsDevice.SetRenderTarget(null);
+
+                // Combine the depth buffers..
+                BlendDepth(blendedDepthBuffer, depthMap);
             }
             else
             {
@@ -152,6 +158,25 @@ namespace IlluminatiEngine.Renderer.Deferred
                     CanDrawNonDeferred.Draw(gameTime);
             }
         }
+
+        Effect depthBlender;
+        public void BlendDepth(Texture2D buff1, Texture2D buff2)
+        {
+            if (depthBlender == null)
+                depthBlender = AssetManager.GetAsset<Effect>("Shaders/DepthBlender");
+
+            GraphicsDevice.SetRenderTarget(finalDepthBuffer);
+
+            depthBlender.Parameters["buff2"].SetValue(buff2);
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            depthBlender.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(buff1, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+        }
+        
         
         public void InitializeDeferredRender()
         {
@@ -178,14 +203,18 @@ namespace IlluminatiEngine.Renderer.Deferred
             {
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
 
-                spriteBatch.Draw(t, new Rectangle(0, 0, w * 6, h + 2), Color.White);
-                spriteBatch.Draw(colorMap, new Rectangle(1, 1, w, h), Color.White);
+                spriteBatch.Draw(t, new Rectangle(0, 0, w * 7, h + 2), Color.White);
+
+                spriteBatch.Draw(finalBackBuffer, new Rectangle(1, 1, w, h), Color.White);
                 spriteBatch.Draw(SGRMap, new Rectangle(w + 2, 1, w, h), Color.White);
                 spriteBatch.Draw(normalMap, new Rectangle((w * 2) + 3, 1, w, h), Color.White);
 
                 GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+
                 spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 5, 1, w, h), Color.White);
-                spriteBatch.Draw(lightMap, new Rectangle((w * 4) + 7, 1, w, h), Color.White);
+                spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(lightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
 
                 spriteBatch.End();
             }

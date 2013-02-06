@@ -14,6 +14,8 @@ namespace IlluminatiEngine
     public enum BaseAssets
     {
         BlankTexture,
+        WhiteTexture,
+        NormalTexture,
     }
 
     public class AssetManager : GameComponent, IAssetManager
@@ -167,6 +169,19 @@ namespace IlluminatiEngine
                         Texture2D bt = new Microsoft.Xna.Framework.Graphics.Texture2D(Game.GraphicsDevice, 1, 1);
                         bt.SetData<Color>(new Color[] { Color.Black });
                         AddAsset<T>(key.ToString(), bt);
+                        returnObj = GetAsset<T>(key);
+                        break;
+                    case BaseAssets.WhiteTexture:
+                        Texture2D wt = new Microsoft.Xna.Framework.Graphics.Texture2D(Game.GraphicsDevice, 1, 1);
+                        wt.SetData<Color>(new Color[] { Color.White });
+                        AddAsset<T>(key.ToString(), wt);
+                        returnObj = GetAsset<T>(key);
+                        break;
+                    case BaseAssets.NormalTexture:
+                        Texture2D nt = new Microsoft.Xna.Framework.Graphics.Texture2D(Game.GraphicsDevice, 1, 1);
+                        nt.SetData<Color>(new Color[] { new Color(128, 128, 255) });
+                        AddAsset<T>(key.ToString(), nt);
+                        returnObj = GetAsset<T>(key);
                         break;
                 }                
             }
