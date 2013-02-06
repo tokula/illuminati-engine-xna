@@ -152,10 +152,6 @@ namespace IlluminatiEngine
             test.Enabled = false;
             ppManager.AddEffect(test);
 
-            fog = new FogEffect(this, 50, 100, Color.DarkSlateGray);
-            fog.Enabled = false;
-            ppManager.AddEffect(fog);
-
             SSAO = new SSAOEffect(this, .1f, 1f, .5f, 1f);
             SSAO.Enabled = false;
             ppManager.AddEffect(SSAO);
@@ -194,6 +190,10 @@ namespace IlluminatiEngine
             water.waterHeight = -25f;
             water.Enabled = false;
             ppManager.AddEffect(water);
+
+            fog = new FogEffect(this, 50, 100, Color.DarkSlateGray);
+            fog.Enabled = false;
+            ppManager.AddEffect(fog);
 
             godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, 1f, .15f, .25f);
             //godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, .1f, 0.12f, .25f);
@@ -309,7 +309,7 @@ namespace IlluminatiEngine
             if (PostProcessingOn)
             {
                 STHpEffect.normalMap = renderer.normalMap;
-                ppManager.Draw(gameTime, renderer.finalBackBuffer, renderer.depthMap, renderer.normalMap);
+                ppManager.Draw(gameTime, renderer.finalBackBuffer, renderer.finalDepthBuffer, renderer.normalMap);
             }
             else
             {

@@ -100,21 +100,14 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 	if(input.screenPos.z > depthVal)
 	{
 		output.Color = 0;
-		output.Depth.r = 1-depthVal;
-		output.Depth.a = 1;
 	}
 	else
 	{
-		if(output.Color.a > .9)
+		if(output.Color.r > .55)
 		{
-			output.Depth.r = 1-input.screenPos.z; // Flip to keep accuracy away from floating point issues.
-			output.Depth.a = 1;
+			output.Depth.r = (1-input.screenPos.z); // Flip to keep accuracy away from floating point issues.
 		}
-		else
-		{
-			output.Depth.r = 1-depthVal;
-			output.Depth.a = 1;
-		}
+		output.Depth.a = output.Color.r;		
 	}
 
 	output.Color.a = input.alpha;

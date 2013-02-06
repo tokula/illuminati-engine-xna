@@ -226,15 +226,13 @@ namespace IlluminatiEngine
 
             if (blank == null)
             {
-                blank = new Texture2D(Game.GraphicsDevice, 1, 1);
-                blank.SetData<Color>(new Color[] { Color.Black });
+                blank = AssetManager.GetAsset<Texture2D>(BaseAssets.BlankTexture);
             }
 
             if (blank_normal == null)
             {
-                blank_normal = new Texture2D(Game.GraphicsDevice, 1, 1);
-                //blank_normal.SetData<Color>(new Color[] { new Color(128,128,255) });
-                blank_normal.SetData<Color>(new Color[] { new Color(0, 0, 0) });
+                //blank_normal = AssetManager.GetAsset<Texture2D>(BaseAssets.NormalTexture);
+                blank_normal = AssetManager.GetAsset<Texture2D>(BaseAssets.BlankTexture);
             }
         }
 

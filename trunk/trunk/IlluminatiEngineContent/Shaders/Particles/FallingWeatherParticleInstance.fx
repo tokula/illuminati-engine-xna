@@ -85,7 +85,7 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
 	
-	output.Color = tex2D(textureSample,input.TexCoord)  * color;
+	output.Color = tex2D(textureSample,input.TexCoord);
 	
 	input.screenPos /= input.screenPos.w;
 	float2 texCoord = 0.5f * (float2(input.screenPos.x,-input.screenPos.y) + 1);
@@ -95,23 +95,16 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 	if(input.screenPos.z > depthVal)
 	{
 		output.Color = 0;
-		output.Depth = 1-depthVal;
-		output.Depth.a = 1;
 	}
 	else
 	{
-		if(output.Color.r > .9)
+		if(output.Color.r > .55)
 		{
-			output.Depth.r = 1-input.screenPos.z; // Flip to keep accuracy away from floating point issues.
-			output.Depth.a = 1;
+			output.Depth.r = (1-input.screenPos.z); // Flip to keep accuracy away from floating point issues.
 		}
-		else
-		{
-			output.Depth.r = 1-depthVal;
-			output.Depth.a = 1;
-		}
+		output.Depth.a = output.Color.r;		
 	}
-
+		
 	return output; 
 }
 
