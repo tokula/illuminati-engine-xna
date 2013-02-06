@@ -92,7 +92,13 @@ namespace BasicTerrain
             CollisionFilterGroups colGroup = CollisionFilterGroups.DefaultFilter;
             CollisionFilterGroups colMask = CollisionFilterGroups.AllFilter;
 
-            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", 5, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity), new Bullet.BulletCollision.SphereShape(1), Vector3.Zero, colGroup, colMask);
+
+            float sphereMass = 5f;
+            CollisionShape sphereShape = new Bullet.BulletCollision.SphereShape(1);
+
+            Bullet.LinearMath.IndexedVector3 sphereLocalInertia;
+            sphereShape.CalculateLocalInertia(sphereMass,out sphereLocalInertia);
+            BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", sphereMass, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity),sphereShape , sphereLocalInertia, colGroup, colMask);
             ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
             ball.TextureMaterials.Add("Textures/core1");
             ball.NormalMaterials.Add("Textures/core1Normal");
