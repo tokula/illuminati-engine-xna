@@ -228,6 +228,36 @@ namespace IlluminatiEngine
             }
         }
 
+        public void ResetWorld()
+        {
+            lock (addRemoveLock)
+            {
+                m_removeList.Clear();
+                ObjectArray<CollisionObject> allObjects = new ObjectArray<CollisionObject>();
+                allObjects.AddRange(_world.GetCollisionObjectArray());
+                foreach(CollisionObject co in allObjects)
+                {
+                    if(co is RigidBody)
+                    {
+                        _world.RemoveRigidBody(co as RigidBody);
+                    }
+                    else
+                    {
+                        _world.RemoveCollisionObject(co);
+                    }
+                }
+
+                ObjectArray<TypedConstraint> allConstraints = new ObjectArray<TypedConstraint>();
+                allConstraints.AddRange(_world.GetConstraintsObjectArray());
+                foreach (TypedConstraint typedConstraint in allConstraints)
+                {
+                    _world.RemoveConstraint(typedConstraint);
+                }
+            }
+            // that should be it..... but we may want to re-create broadphases and the like...
+        }
+
+
         public struct ColObjectHolder
         {
             public ColObjectHolder(CollisionObject co,CollisionFilterGroups fg, CollisionFilterGroups fm)
