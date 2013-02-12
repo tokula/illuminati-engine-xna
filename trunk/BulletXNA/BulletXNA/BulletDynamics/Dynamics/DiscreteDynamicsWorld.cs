@@ -237,6 +237,12 @@ namespace BulletXNA.BulletDynamics
             constraint.GetRigidBodyB().RemoveConstraintRef(constraint);
         }
 
+
+        public ObjectArray<TypedConstraint> GetConstraintsObjectArray()
+        {
+            return m_constraints;
+        }
+
         public override void AddAction(IActionInterface action)
         {
             m_actions.Add(action);
