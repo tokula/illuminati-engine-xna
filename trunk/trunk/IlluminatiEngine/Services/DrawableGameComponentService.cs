@@ -15,5 +15,11 @@ namespace IlluminatiEngine
             game.Components.Add(this);
             game.Services.AddService(this.GetType(), this);
         }
+
+        public virtual void Dispose()
+        {
+            Game.Components.Remove(this);
+            Game.Services.RemoveService(this.GetType());
+        }
     }
 }

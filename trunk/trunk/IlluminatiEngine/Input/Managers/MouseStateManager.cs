@@ -13,6 +13,7 @@ namespace IlluminatiEngine
         public MouseState State;
         public MouseState LastState;
 
+        public Point PositionAsPoint;
         public Vector2 Position;
         public Vector2 LastPosition;
         public Vector2 Direction;
@@ -94,6 +95,7 @@ namespace IlluminatiEngine
         {
             State = Mouse.GetState();
             Position = new Vector2(State.X, State.Y);
+            PositionAsPoint = new Point(State.X, State.Y);
             base.Update(gameTime);
         }
 

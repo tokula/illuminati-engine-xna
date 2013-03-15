@@ -50,7 +50,7 @@ namespace IlluminatiEngine
 
                 effect.Parameters["EyePosition"].SetValue(Camera.Position);
                 effect.Parameters["alpha"].SetValue(Alpha);
-
+                GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
                 effect.CurrentTechnique.Passes[0].Apply();
 
                 int cnt = thisMesh.Meshes.Count;

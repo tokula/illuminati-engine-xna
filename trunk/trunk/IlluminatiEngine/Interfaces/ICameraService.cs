@@ -32,5 +32,7 @@ namespace IlluminatiEngine
         { get; }
 
         Vector3 GetIntPosition();
+
+        void Dispose();
     }
 }

@@ -8,7 +8,7 @@ float4x4 vp :ViewProjection;
 float3 EyePosition;
 float3 worldUp = float3(0,1,0);
 float min = 0;
-float max = 50;
+float max = 150;
 float fallSpeed = .05f;
 float3 wind = float3(0,0,0);
 

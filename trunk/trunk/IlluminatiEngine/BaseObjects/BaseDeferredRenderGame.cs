@@ -161,10 +161,14 @@ namespace IlluminatiEngine
             stHPe.Enabled = false;
             ppManager.AddEffect(stHPe);
                         
-
             sun = new SunEffect(this, SunPosition);
             sun.Enabled = false;
             ppManager.AddEffect(sun);
+
+            water = new WaterEffect(this);
+            water.waterHeight = -25f;
+            water.Enabled = false;
+            ppManager.AddEffect(water);
 
             dof = new DepthOfFieldEffect(this, 5, 30);
             dof.Enabled = false;
@@ -185,11 +189,6 @@ namespace IlluminatiEngine
             ripple = new RippleEffect(this);
             ripple.Enabled = false;
             ppManager.AddEffect(ripple);
-
-            water = new WaterEffect(this);
-            water.waterHeight = -25f;
-            water.Enabled = false;
-            ppManager.AddEffect(water);
 
             fog = new FogEffect(this, 50, 100, Color.DarkSlateGray);
             fog.Enabled = false;

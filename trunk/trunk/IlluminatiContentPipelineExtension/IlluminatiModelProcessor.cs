@@ -203,7 +203,13 @@ namespace IlluminatiContentPipelineExtension
 
             Dictionary<string, object> ModelData = new Dictionary<string, object>();
 
+            if (EnableLogging)
+                LogWriter.WriteToLog(string.Format("Running base.Process for {0}", modelName));
+
             ModelContent baseModel = base.Process(input, context);
+
+            if (EnableLogging)
+                LogWriter.WriteToLog(string.Format("Running GenerateData for {0}", modelName));
 
             GenerateData(input);
 
@@ -289,7 +295,12 @@ namespace IlluminatiContentPipelineExtension
                         vertex = Vector3.Transform(geometry.Vertices.Positions[index], absoluteTransform);
 
                         if (geometry.Vertices.Channels.Contains("TextureCoordinate0"))
+                        {
+                            if (EnableLogging)
+                                LogWriter.WriteToLog("TextureCoordinate0 found in mesh data");
+                    
                             tmpTex = (Vector2)geometry.Vertices.Channels["TextureCoordinate0"][index];
+                        }
 
                         if (geometry.Vertices.Channels.Contains("Normal0"))
                             tmpNorm = Vector3.Transform((Vector3)geometry.Vertices.Channels["Normal0"][index], absoluteTransform);

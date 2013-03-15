@@ -157,6 +157,11 @@ namespace IlluminatiEngine
         {
             GameComponentHelper.LookAt(target, speed, Position, ref rotation, fwd);
         }
+
+        public virtual void LookAtLockRotation(Vector3 target, float speed, Vector3 fwd, Vector3 lockedRots)
+        {
+            GameComponentHelper.LookAtLockRotation(target, speed, Position, ref rotation, fwd, lockedRots);
+        }
         /// <summary>
         /// Method to update.
         /// </summary>
@@ -167,7 +172,7 @@ namespace IlluminatiEngine
             view = Matrix.Invert(world);
 
             //projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.Pi / 3.0f, (float)Viewport.Width / (float)Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth);
-            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)Viewport.Width / (float)Viewport.Height, Viewport.MinDepth, Viewport.MaxDepth);
+            projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Viewport.AspectRatio, Viewport.MinDepth, Viewport.MaxDepth);
             base.Update(gameTime);
         }
         public virtual Vector3 GetIntPosition()
@@ -194,6 +199,14 @@ namespace IlluminatiEngine
         public virtual void Rotate(Vector3 axis, float angle)
         {
             GameComponentHelper.Rotate(axis, angle, ref rotation);
+        }
+
+        public virtual void Dispose()
+        {
+            base.Dispose();
+
+            Game.Components.Remove(this);
+            Game.Services.RemoveService(typeof(ICameraService));
         }
 
     }

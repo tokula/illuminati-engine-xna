@@ -131,6 +131,7 @@ technique Deferred
 {
     pass Pass1
     {
+		//CullMode = None;
 		VertexShader = compile vs_3_0 VertexShaderFunction();
         PixelShader = compile ps_3_0 PSBasicTexture();
     }

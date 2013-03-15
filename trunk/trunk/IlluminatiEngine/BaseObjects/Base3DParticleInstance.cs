@@ -42,18 +42,18 @@ namespace IlluminatiEngine
         public Vector3 pMods = -Vector3.One * 10000;
         public Vector3 AdditionalCPUData;
 
-        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, ref Base3DParticleInstancer instancer,Quaternion orientation) : this(game, position, scale, ref instancer)
+        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, ref Base3DParticleInstancer instancer,Quaternion orientation) : this(game, position, scale, instancer)
         {
             Orientation = orientation;
             this.Update(null);
         }
-        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Vector3 mods, ref Base3DParticleInstancer instancer)
-            : this(game,position, scale, ref instancer)
+        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Vector3 mods, Base3DParticleInstancer instancer)
+            : this(game,position, scale, instancer)
         {
             pMods = mods;
             this.Update(null);
         }
-        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, ref Base3DParticleInstancer instancer)
+        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Base3DParticleInstancer instancer)
             : this(game)
         {
 

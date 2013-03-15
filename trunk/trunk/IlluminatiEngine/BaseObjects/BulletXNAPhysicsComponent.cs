@@ -127,50 +127,50 @@ namespace IlluminatiEngine
 
         public override void Update(GameTime gameTime)
         {
-                SimpleProfiler.StartProfileBlock("BulletXNA");
+            SimpleProfiler.StartProfileBlock("BulletXNA");
 
-                lock (addRemoveLock)
+            lock (addRemoveLock)
+            {
+
+                // go through and add / remove new objects in thread safe way.
+                // FIXME MAN - should do the same for constraints at somepoint.
+                int cnt = m_removeList.Count;
+                for (int r = 0; r < cnt; r++)
+                {
+                    if (m_removeList[r] is RigidBody)
+                    {
+                        _world.RemoveRigidBody(m_removeList[r] as RigidBody);
+                    }
+                    else
+                    {
+                        _world.RemoveCollisionObject(m_removeList[r]);
+                    }
+                }
+                m_removeList.Clear();
+
+                cnt = m_addList.Count;
+                for (int a = 0; a < cnt; a++)
+                {
+                    if (m_addList[a].collisionObject is RigidBody)
+                    {
+                        _world.AddRigidBody(m_addList[a].collisionObject as RigidBody, m_addList[a].filterGroup, m_addList[a].filterMask);
+                    }
+                    else
+                    {
+                        _world.AddCollisionObject(m_addList[a].collisionObject, m_addList[a].filterGroup, m_addList[a].filterMask);
+                    }
+                }
+                m_addList.Clear();
+
+                if (Enabled)
                 {
 
-                    // go through and add / remove new objects in thread safe way.
-                    // FIXME MAN - should do the same for constraints at somepoint.
-                    int cnt = m_removeList.Count;
-                    for (int r = 0; r < cnt; r++)
-                    {
-                        if (m_removeList[r] is RigidBody)
-                        {
-                            _world.RemoveRigidBody(m_removeList[r] as RigidBody);
-                        }
-                        else
-                        {
-                            _world.RemoveCollisionObject(m_removeList[r]);
-                        }
-                    }
-                    m_removeList.Clear();
-
-                    cnt = m_addList.Count;
-                    for (int a = 0; a < cnt; a++)
-                    {
-                        if (m_addList[a].collisionObject is RigidBody)
-                        {
-                            _world.AddRigidBody(m_addList[a].collisionObject as RigidBody, m_addList[a].filterGroup, m_addList[a].filterMask);
-                        }
-                        else
-                        {
-                            _world.AddCollisionObject(m_addList[a].collisionObject, m_addList[a].filterGroup, m_addList[a].filterMask);
-                        }
-                    }
-                    m_addList.Clear();
-
-                    if (Enabled)
-                    {
-
-                    _world.StepSimulation((float)gameTime.ElapsedGameTime.TotalMilliseconds, 1);
-                    _world.DebugDrawWorld();
-                    }
-
+                _world.StepSimulation((float)gameTime.ElapsedGameTime.TotalMilliseconds, 1);
+                _world.DebugDrawWorld();
                 }
-                SimpleProfiler.EndProfileBlock("BulletXNA");
+
+            }
+            SimpleProfiler.EndProfileBlock("BulletXNA");
 
         }
 
