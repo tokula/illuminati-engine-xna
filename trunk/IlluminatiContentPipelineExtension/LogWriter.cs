@@ -19,7 +19,7 @@ namespace IlluminatiContentPipelineExtension
         public static void WriteToLog(string data)
         {
             StreamWriter sw = new StreamWriter("IlluminatiContentPipeline.log", true);
-            sw.WriteLine(string.Format("{0:DD-mm-yyyy HH:MM:ss} - {1}",DateTime.Now, data));
+            sw.WriteLine(string.Format("{0:dd-MM-yyyy HH:mm:ss} - {1}",DateTime.Now, data));
             sw.Close();
         }
     }

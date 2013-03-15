@@ -221,6 +221,9 @@ namespace IlluminatiEngine
 
         public override void Update(GameTime gameTime)
         {
+            if (!Enabled)
+                return;
+
             world = Matrix.CreateScale(scale) * Matrix.CreateFromQuaternion(rotation) * Matrix.CreateTranslation(position);
             base.Update(gameTime);
 
@@ -331,17 +334,21 @@ namespace IlluminatiEngine
                         pcnt++;
                     }
 
-                    effect.CurrentTechnique.Passes[0].Apply();
-
-                    try
+                    int pCnt = effect.CurrentTechnique.Passes.Count;
+                    for (int p = 0; p < pCnt; p++)
                     {
-                        Game.GraphicsDevice.SetVertexBuffer(thisMesh.Meshes[m].MeshParts[mp].VertexBuffer);
-                        Game.GraphicsDevice.Indices = thisMesh.Meshes[m].MeshParts[mp].IndexBuffer;
-                        Game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, thisMesh.Meshes[m].MeshParts[mp].VertexOffset, 0, thisMesh.Meshes[m].MeshParts[mp].NumVertices, thisMesh.Meshes[m].MeshParts[mp].StartIndex, thisMesh.Meshes[m].MeshParts[mp].PrimitiveCount);
-                    }
-                    catch (Exception e)
-                    {
+                        effect.CurrentTechnique.Passes[p].Apply();
 
+                        try
+                        {
+                            Game.GraphicsDevice.SetVertexBuffer(thisMesh.Meshes[m].MeshParts[mp].VertexBuffer);
+                            Game.GraphicsDevice.Indices = thisMesh.Meshes[m].MeshParts[mp].IndexBuffer;
+                            Game.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, thisMesh.Meshes[m].MeshParts[mp].VertexOffset, 0, thisMesh.Meshes[m].MeshParts[mp].NumVertices, thisMesh.Meshes[m].MeshParts[mp].StartIndex, thisMesh.Meshes[m].MeshParts[mp].PrimitiveCount);
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
                     }
                 }
             }
@@ -446,11 +453,7 @@ namespace IlluminatiEngine
 
             lineShader.Parameters["world"].SetValue(Matrix.CreateScale(Scale) * Matrix.CreateTranslation(position));
             lineShader.Parameters["wvp"].SetValue((Matrix.CreateScale(Scale) * Matrix.CreateTranslation(position)) * Camera.View * Camera.Projection);
-            //lineShader.World = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(position);
-            //lineShader.View = Camera.View;
-            //lineShader.Projection = Camera.Projection;
-            //lineShader.VertexColorEnabled = true;
-
+            
             lineShader.CurrentTechnique.Passes[0].Apply();
             GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineList, points, 0, points.Length, index, 0, primativeCount);
         }

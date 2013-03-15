@@ -99,7 +99,7 @@ namespace BasicTerrain
             Bullet.LinearMath.IndexedVector3 sphereLocalInertia;
             sphereShape.CalculateLocalInertia(sphereMass,out sphereLocalInertia);
             BulletXNAObject ball = new BulletXNAObject(this, "Models/Sphere", sphereMass, new Bullet.DefaultMotionState(Matrix.CreateTranslation(camera.Position + new Vector3(0, 10, -5)), Matrix.Identity),sphereShape , sphereLocalInertia, colGroup, colMask);
-            ball.TranslateAA(camera.Position + new Vector3(0, 10, -5));
+            ball.TranslateAA(camera.Position + new Vector3(0, 10, 0));
             ball.TextureMaterials.Add("Textures/core1");
             ball.NormalMaterials.Add("Textures/core1Normal");
             ball.RigidBody.SetFriction(1);
