@@ -11,6 +11,17 @@ namespace IlluminatiEngine
     public static class GameComponentHelper
     {
         /// <summary>
+        /// Plane used for cliping the view port for water reflections.
+        /// </summary>
+        public static Plane WaterReflectionPane;
+
+        public static bool CreateWaterReflectionMap { get; set; }
+
+        public static RenderTarget2D reflectionMap { get; set; }
+        public static RenderTarget2D reflectionSGRMap { get; set; }
+        public static RenderTarget2D lightMap { get; set; }
+
+        /// <summary>
         /// Method to turn a 3D object to face a position in world space.
         /// </summary>
         /// <param name="target"></param>
@@ -50,11 +61,17 @@ namespace IlluminatiEngine
         {
             LookAt(target, speed, position, ref rotation, fwd);
 
+            LockRotation(ref rotation, lockedRots);
+
+        }
+
+        public static void LockRotation(ref Quaternion rotation, Vector3 lockedRots)
+        {
             lockedRots -= -Vector3.One;
             Vector3 rots = GameComponentHelper.QuaternionToEulerAngleVector3(rotation) * lockedRots;
             rotation = Quaternion.CreateFromRotationMatrix(Matrix.CreateRotationX(rots.X) * Matrix.CreateRotationY(rots.Y) * Matrix.CreateRotationX(rots.Z));
-
         }
+
         /// <summary>
         /// Method to rotate an object.
         /// </summary>
@@ -315,6 +332,23 @@ namespace IlluminatiEngine
         public static void PrintVector3(StringBuilder writer, String name, Microsoft.Xna.Framework.Vector3 v)
         {
             writer.AppendLine(String.Format("[{0}] {{X:{1:0.00000000} Y:{2:0.00000000} Z:{3:0.00000000}}}", name, v.X, v.Y, v.Z));
+        }
+
+        public static Plane CreatePlane(float height, Vector3 planeNormalDirection, Matrix currentViewMatrix, bool clipSide, Matrix projectionMatrix)
+        {
+            planeNormalDirection.Normalize();
+            Vector4 planeCoeffs = new Vector4(planeNormalDirection, height);
+            if (clipSide)
+                planeCoeffs *= -1;
+
+            Matrix worldViewProjection = currentViewMatrix * projectionMatrix;
+            Matrix inverseWorldViewProjection = Matrix.Invert(worldViewProjection);
+            inverseWorldViewProjection = Matrix.Transpose(inverseWorldViewProjection);
+
+            planeCoeffs = Vector4.Transform(planeCoeffs, inverseWorldViewProjection);
+            Plane finalPlane = new Plane(planeCoeffs);
+
+            return finalPlane;
         }
 
     }

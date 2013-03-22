@@ -6,6 +6,8 @@ float4x4 wvp : WorldViewProjection;
 
 float3 color = 1;
 
+float4 clipPlane = 0;
+
 texture textureMat;
 
 sampler textureSample = sampler_state 
@@ -77,13 +79,17 @@ struct VertexShaderOutput
     float3 Normal : Normal0;
 	float3x3 Tangent: Tangent0;
 	float4 SPos : TexCoord1;
+	float4 clipDistances : TEXCOORD2;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
     
-	
+	output.clipDistances.x = dot(input.Position,clipPlane);
+	output.clipDistances.y = 0;
+	output.clipDistances.z = 0;
+	output.clipDistances.w = 0;
 
     output.Position = mul(input.Position, wvp);
     output.TexCoord = input.TexCoord;
@@ -101,6 +107,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
+
+	clip(input.clipDistances);
 	
 	output.Color = tex2D(textureSample,input.TexCoord) * float4(color,1);
 		

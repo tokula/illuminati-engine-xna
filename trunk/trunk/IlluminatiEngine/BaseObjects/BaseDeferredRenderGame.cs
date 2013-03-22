@@ -197,7 +197,7 @@ namespace IlluminatiEngine
             godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, 1f, .15f, .25f);
             //godRays = new CrepuscularRays(this, SunPosition, "Textures/flare", 1500, 1f, .99f, .1f, 0.12f, .25f);
             godRays.Enabled = false;
-            ppManager.AddEffect(godRays);
+            ppManager.AddEffect(godRays);            
         }
 
         public delegate void DeviceCreationEvent(object sender, PreparingDeviceSettingsEventArgs e);
@@ -365,6 +365,19 @@ namespace IlluminatiEngine
             {
                 _GraphicsDevice = value;
             }
+        }
+
+        public bool CreateWaterReflectionMap 
+        { 
+            get 
+            {
+                renderer.WaterHeight = water.waterHeight;
+                return GameComponentHelper.CreateWaterReflectionMap; 
+            } 
+            set 
+            {
+                GameComponentHelper.CreateWaterReflectionMap = value; 
+            } 
         }
     }
 }
