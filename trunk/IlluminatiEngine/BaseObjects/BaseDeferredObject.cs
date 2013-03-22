@@ -283,6 +283,8 @@ namespace IlluminatiEngine
 
                         effect.Parameters["color"].SetValue(color.ToVector3());
 
+                        effect.Parameters["clipPlane"].SetValue(new Vector4(GameComponentHelper.WaterReflectionPane.Normal, GameComponentHelper.WaterReflectionPane.D));
+
                         // Texture
                         if (TextureMaterials.Count > 0 && pcnt < TextureMaterials.Count)
                             effect.Parameters["textureMat"].SetValue(AssetManager.GetAsset<Texture2D>(TextureMaterials[pcnt]));

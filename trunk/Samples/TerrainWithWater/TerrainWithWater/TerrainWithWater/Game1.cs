@@ -101,6 +101,12 @@ namespace TerrainWithWater
             if (inputHandler.KeyboardManager.KeyPress(Keys.Space))
                 renderer.DirectionalLights[0].CastShadow = !renderer.DirectionalLights[0].CastShadow;
 
+            if (inputHandler.KeyboardManager.KeyPress(Keys.R))
+            {
+                CreateWaterReflectionMap = true;
+                Water.maxAmplitude = .001f;
+            }
+
             if (inputHandler.KeyboardManager.KeyDown(Keys.W) || inputHandler.GamePadManager.ButtonDown(PlayerIndex.One, Buttons.DPadUp))
                 camera.Translate(Vector3.Forward * speedTran);
             if (inputHandler.KeyboardManager.KeyDown(Keys.S) || inputHandler.GamePadManager.ButtonDown(PlayerIndex.One, Buttons.DPadDown))
@@ -137,6 +143,7 @@ namespace TerrainWithWater
             spriteBatch.DrawString(font, "WASD       - Translate Camera", new Vector2(0, font.LineSpacing * 2), Color.Gold);
             spriteBatch.DrawString(font, "Arrow Keys - Rotate Camera", new Vector2(0, font.LineSpacing * 3), Color.Gold);
             spriteBatch.DrawString(font, "Space      - Shadows On/Off", new Vector2(0, font.LineSpacing * 4), Color.Gold);
+            spriteBatch.DrawString(font, "R          - Reflection On", new Vector2(0, font.LineSpacing * 5), Color.Gold);
 
             spriteBatch.End();
         }

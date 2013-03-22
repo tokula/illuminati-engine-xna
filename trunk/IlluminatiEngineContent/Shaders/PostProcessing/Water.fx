@@ -140,8 +140,8 @@ float4 WaterPS(VertexOutput IN): COLOR0
 	float3 color2 = tex2D(backBufferMap, IN.texCoord).rgb;
 	float3 color = color2;
 	
-	float3 bigDepthColourl = bigDepthColour;// * tex2D(lightSampler,IN.texCoord);
-	float3 depthColourl = depthColour;// * tex2D(lightSampler,IN.texCoord);
+	float3 bigDepthColourl = bigDepthColour * tex2D(lightSampler,IN.texCoord);
+	float3 depthColourl = depthColour * tex2D(lightSampler,IN.texCoord);
 	
 	float3 position;
 	
@@ -294,7 +294,7 @@ float4 WaterPS(VertexOutput IN): COLOR0
 							 (depth2 - foamExistence.x) / (foamExistence.y - foamExistence.x));
 				
 			}
-			//foam *= tex2D(lightSampler,IN.texCoord)*2;
+			foam *= tex2D(lightSampler,IN.texCoord)*2;
 			
 			// Specular			
 			float fresnel = fresnelTerm(normal, eyeVecNorm);
@@ -305,8 +305,8 @@ float4 WaterPS(VertexOutput IN): COLOR0
 							  
 			//color = refraction;// + specular;	
 			color = lerp(refraction, reflect, fresnel);
-			//color = saturate(color + max(specular * (tex2D(lightSampler,IN.texCoord)*2), foam * sunColor));			
-			color = saturate(color + max(specular, foam * sunColor));			
+			color = saturate(color + max(specular * (tex2D(lightSampler,IN.texCoord)*2), foam * sunColor));			
+			//color = saturate(color + max(specular, foam * sunColor));			
 			color = lerp(refraction, color, saturate(depth * shoreHardness));			
 
 		}	

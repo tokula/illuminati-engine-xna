@@ -11,6 +11,7 @@ namespace IlluminatiEngine.Renderer.Deferred
 {
     public class DeferredRender : DrawableComponentService
     {
+        public float WaterHeight { get; set; }
         public bool StopRender { get; set; }
         public DrawableGameComponent CanDrawNonDeferred { get; set; }
         public DrawableGameComponent CanDrawDeferred { get; set; }
@@ -67,6 +68,10 @@ namespace IlluminatiEngine.Renderer.Deferred
 
         public override void Draw(GameTime gameTime)
         {
+            // Get reflection map
+            if (((BaseDeferredRenderGame)Game).CreateWaterReflectionMap)
+                GetReflectionMap(gameTime, WaterHeight);
+
             RenderDeferred(gameTime);            
         }
         public override void Initialize()
@@ -81,6 +86,8 @@ namespace IlluminatiEngine.Renderer.Deferred
             normalMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rgba1010102, DepthFormat.Depth24Stencil8);
             depthMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
             lightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            GameComponentHelper.reflectionMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            GameComponentHelper.reflectionSGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
 
             finalBackBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             finalDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
@@ -212,7 +219,10 @@ namespace IlluminatiEngine.Renderer.Deferred
                 GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
 
                 spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 5, 1, w, h), Color.White);
-                spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+
+                //spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                
                 spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 5, 1, w, h), Color.White);
                 spriteBatch.Draw(lightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
 
@@ -253,6 +263,8 @@ namespace IlluminatiEngine.Renderer.Deferred
                 RenderConeLight(cLights[l]);
 
             GraphicsDevice.SetRenderTarget(null);
+
+            GameComponentHelper.lightMap = lightMap;
         }
 
         public void RenderDirectionalLight(IDirectionalLight directionalLight)
@@ -547,6 +559,57 @@ namespace IlluminatiEngine.Renderer.Deferred
             DirectionalLights.Clear();
             PointLights.Clear();
             ConeLights.Clear();
+        }
+
+        public void GetReflectionMap(GameTime gameTime, float waterHeight)
+        {
+            Quaternion orgRot = Camera.Rotation;
+            Matrix orgView = Camera.View;
+
+            Vector3 refCamPos = Camera.Position;
+            refCamPos.Y = -refCamPos.Y + waterHeight * 2;
+
+            GameComponentHelper.LockRotation(ref orgRot, Vector3.Forward);
+            Matrix rot = Matrix.CreateFromQuaternion(orgRot);
+
+            Vector3 refTargetPos = Camera.Position + Vector3.Transform(Vector3.Forward, rot);
+            refTargetPos.Y = -refTargetPos.Y + waterHeight * 2;
+
+            Vector3 camRight = Vector3.Transform(Vector3.Right, rot);
+            Vector3 invUp = Vector3.Cross(camRight, refCamPos - refTargetPos);
+
+            Camera.View = Matrix.CreateLookAt(refCamPos, refTargetPos, invUp);
+
+            GameComponentHelper.WaterReflectionPane = GameComponentHelper.CreatePlane(waterHeight -0.5f, new Vector3(0, -1, 0), Camera.View, true, Camera.Projection);
+            Game.GraphicsDevice.SetRenderTargets(GameComponentHelper.reflectionMap, GameComponentHelper.reflectionSGRMap);
+            Game.GraphicsDevice.BlendState = BlendState.Opaque;
+            Game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+
+            // Draw here.  
+            if (!StopRender)
+            {
+                int cnt = Game.Components.Count;
+                for (int c = 0; c < cnt; c++)
+                {
+                    // Do draw
+                    if (Game.Components[c] is IDeferredRender)
+                        ((IDeferredRender)Game.Components[c]).Draw(gameTime);
+                }
+            }
+            else
+            {
+                if (CanDrawDeferred != null && CanDrawDeferred is IDeferredRender)
+                    CanDrawDeferred.Draw(gameTime);
+            }
+
+            //GraphicsDevice.ClipPlanes[0].IsEnabled = false;
+            Game.GraphicsDevice.SetRenderTargets(null);
+
+            Camera.Rotation = orgRot;
+            Camera.View = orgView;
+            //SaveJpg(GameComponentHelper.reflectionMap, "ReflectionMap.jpg");    
+            Game.GraphicsDevice.DepthStencilState = DepthStencilState.None;
         }
     }
 }

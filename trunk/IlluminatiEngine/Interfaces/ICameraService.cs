@@ -17,7 +17,7 @@ namespace IlluminatiEngine
         { get; }
 
         Matrix View
-        { get; }
+        { get; set; }
 
         Matrix Projection
         { get; }

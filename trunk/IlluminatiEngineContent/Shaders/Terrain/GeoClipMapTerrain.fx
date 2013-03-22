@@ -233,7 +233,7 @@ technique GeoClipMap
 {
     pass Pass1
     {
-		CullMode = None;
+		//CullMode = None;
         VertexShader = compile vs_3_0 VertexShaderFunction();
         PixelShader = compile ps_3_0 PixelShaderFunction();
     }

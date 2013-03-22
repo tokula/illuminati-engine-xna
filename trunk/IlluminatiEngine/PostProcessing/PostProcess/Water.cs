@@ -30,6 +30,10 @@ namespace IlluminatiEngine.PostProcessing
                 effect.CurrentTechnique = effect.Techniques["Water"];
             }
 
+            effect.Parameters["lightMap"].SetValue(GameComponentHelper.lightMap);
+
+            if (GameComponentHelper.CreateWaterReflectionMap)
+                effect.Parameters["reflectionMapTex"].SetValue(GameComponentHelper.reflectionMap);
 
             effect.Parameters["InvertViewProjection"].SetValue(Matrix.Invert(camera.View * camera.Projection));
             effect.Parameters["cameraPos"].SetValue(camera.Position);
