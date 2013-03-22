@@ -16,6 +16,8 @@ namespace IlluminatiEngine.PostProcessing
         public float maxAmplitude = 3.25f;
         public float refractionScale = .00525f;
 
+        public Vector3 foamExistance = new Vector3(.65f, 1.35f, .5f);
+
         public Water(Game game)
             : base(game)
         {
@@ -30,6 +32,8 @@ namespace IlluminatiEngine.PostProcessing
                 effect.CurrentTechnique = effect.Techniques["Water"];
             }
 
+            effect.Parameters["foamExistence"].SetValue(foamExistance);
+
             effect.Parameters["lightMap"].SetValue(GameComponentHelper.lightMap);
 
             if (GameComponentHelper.CreateWaterReflectionMap)
@@ -37,7 +41,7 @@ namespace IlluminatiEngine.PostProcessing
 
             effect.Parameters["InvertViewProjection"].SetValue(Matrix.Invert(camera.View * camera.Projection));
             effect.Parameters["cameraPos"].SetValue(camera.Position);
-            effect.Parameters["lightDir"].SetValue(Vector3.Normalize(new Vector3(50, 50, 1000)));
+            effect.Parameters["lightDir"].SetValue(Vector3.Normalize(((BaseDeferredRenderGame)Game).SunPosition));
 
             effect.Parameters["heightMapTex"].SetValue(AssetManager.GetAsset<Texture2D>("Textures/wavemap"));
             effect.Parameters["normalMapTex"].SetValue(AssetManager.GetAsset<Texture2D>("Textures/bumpmap"));

@@ -41,9 +41,9 @@ namespace GeoClipMapTerrain
             Components.Add(sb);
 
             // Three terrains for you to play with, or create your own :D
-            terrain = new GeoClipMap(this, 255, "Textures/Terrain/Maps/bumpyMap");
+            //terrain = new GeoClipMap(this, 255, "Textures/Terrain/Maps/bumpyMap");
             //terrain = new GeoClipMap(this, 255, "Textures/Terrain/Maps/flatMap");
-            //terrain = new GeoClipMap(this, 255, "Textures/Terrain/Maps/largeMap");
+            terrain = new GeoClipMap(this, 255, "Textures/Terrain/Maps/largeMap");
             terrain.Position = new Vector3(0, -31, 0);
             Components.Add(terrain);
 
@@ -58,7 +58,8 @@ namespace GeoClipMapTerrain
             Water.maxAmplitude = .1f;
             Water.waterHeight = -7f;
             Water.refractionScale = 0.0001f;
-           
+            Water.foamExistance = new Vector3(0.0f, .35f, 0.5f);
+            Water.seaFloor = -8;
         }
 
         /// <summary>
