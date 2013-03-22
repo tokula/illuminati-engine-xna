@@ -24,6 +24,12 @@ namespace IlluminatiEngine.PostProcessing
             set { water.seaFloor = value; }
         }
 
+        public Vector3 foamExistance
+        {
+            get { return water.foamExistance; }
+            set { water.foamExistance = value; }
+        }
+
         public float maxAmplitude { get { return water.maxAmplitude; } set { water.maxAmplitude = value; } }
 
         public float refractionScale { get { return water.refractionScale; } set { water.refractionScale = value; } }
