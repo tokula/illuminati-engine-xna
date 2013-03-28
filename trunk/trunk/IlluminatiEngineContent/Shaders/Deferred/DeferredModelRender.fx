@@ -86,12 +86,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
     
-	output.clipDistances.x = dot(input.Position,clipPlane);
-	output.clipDistances.y = 0;
-	output.clipDistances.z = 0;
-	output.clipDistances.w = 0;
-
-    output.Position = mul(input.Position, wvp);
+	output.Position = mul(input.Position, wvp);
     output.TexCoord = input.TexCoord;
         
     output.Normal = mul(input.Normal,world);
@@ -100,6 +95,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Tangent[2] = output.Normal;
 	
 	output.SPos = output.Position;
+
+	output.clipDistances.x = dot(output.Position,clipPlane);
+	output.clipDistances.y = 0;
+	output.clipDistances.z = 0;
+	output.clipDistances.w = 0;
     
     return output;
 }

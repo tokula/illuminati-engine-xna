@@ -3,6 +3,8 @@
 float4x4 world : World;
 float4x4 wvp : WorldViewProjection;
 
+float4 clipPlane = 0;
+
 float3 EyePosition;
 
 float2 sqrt = 1024;
@@ -126,6 +128,7 @@ struct VertexShaderOutput
     float4 weight : TEXCOORD1;
     float3x3 Tangent : TEXCOORD4;
     float4 SPos : TEXCOORD3; 	
+	float4 clipDistances : TEXCOORD2;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -186,12 +189,19 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.SPos = output.Position;
 	//output.p = mul(input.Position, world);
 
+	output.clipDistances.x = dot(output.Position, clipPlane);
+	output.clipDistances.y = 0;
+	output.clipDistances.z = 0;
+	output.clipDistances.w = 0;
+
     return output;
 }
 
 PixelShaderOutput PixelShaderFunction(VertexShaderOutput input)
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
+
+	clip(input.clipDistances);
 	
 	float3 Normal;
 	float4x4 norm;
