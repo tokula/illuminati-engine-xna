@@ -60,6 +60,7 @@ namespace GeoClipMapTerrain
             Water.refractionScale = 0.0001f;
             Water.foamExistance = new Vector3(0.0f, .35f, 0.5f);
             Water.seaFloor = -8;
+            CreateWaterReflectionMap = true;
         }
 
         /// <summary>

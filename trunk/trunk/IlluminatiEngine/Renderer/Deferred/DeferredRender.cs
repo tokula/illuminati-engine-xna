@@ -204,6 +204,7 @@ namespace IlluminatiEngine.Renderer.Deferred
             sceneQuad.Draw(-Vector2.One, Vector2.One);
         }
 
+        Effect DepthRender;
         public void RenderDebug()
         {
             if (DebugDeferred)
@@ -218,14 +219,22 @@ namespace IlluminatiEngine.Renderer.Deferred
 
                 GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
 
-                spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 5, 1, w, h), Color.White);
-
-                //spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
-                spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
                 
-                spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+
                 spriteBatch.Draw(lightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
 
+                spriteBatch.End();
+
+                if (DepthRender == null)
+                    DepthRender = AssetManager.GetAsset<Effect>("Shaders/depthRender");
+
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+                DepthRender.CurrentTechnique.Passes[0].Apply();
+                GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+                //spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 5, 1, w, h), Color.White);
                 spriteBatch.End();
             }
         }
