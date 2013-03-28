@@ -580,7 +580,7 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             Camera.View = Matrix.CreateLookAt(refCamPos, refTargetPos, invUp);
 
-            GameComponentHelper.WaterReflectionPane = GameComponentHelper.CreatePlane(waterHeight -0.5f, new Vector3(0, -1, 0), Camera.View, true, Camera.Projection);
+            GameComponentHelper.WaterReflectionPane = GameComponentHelper.CreatePlane(waterHeight, new Vector3(0, -1, 0), Camera.View, true, Camera.Projection);
             Game.GraphicsDevice.SetRenderTargets(GameComponentHelper.reflectionMap, GameComponentHelper.reflectionSGRMap);
             Game.GraphicsDevice.BlendState = BlendState.Opaque;
             Game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -610,6 +610,8 @@ namespace IlluminatiEngine.Renderer.Deferred
             Camera.View = orgView;
             //SaveJpg(GameComponentHelper.reflectionMap, "ReflectionMap.jpg");    
             Game.GraphicsDevice.DepthStencilState = DepthStencilState.None;
+
+            GameComponentHelper.WaterReflectionPane = new Plane();
         }
     }
 }
