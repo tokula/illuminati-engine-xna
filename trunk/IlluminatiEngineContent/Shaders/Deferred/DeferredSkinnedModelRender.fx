@@ -5,7 +5,7 @@ float4x4 world : WORLD;
 float4x4 wvp : WorldViewProjection;
 float4x4 vp : ViewProjection;
 
-
+float4 clipPlane = 0;
 float4x4 Bones[MaxBones];
 
 float3 color = 1;
@@ -83,6 +83,7 @@ struct VertexShaderOutput
     float3 Normal : Normal0;
 	float3x3 Tangent: Tangent0;
 	float4 SPos : TexCoord1;
+	float4 clipDistances : TEXCOORD2;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -107,6 +108,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Tangent[2] = normalize(output.Normal);
 	
 	output.SPos = output.Position;
+
+	output.clipDistances.x = dot(output.Position,clipPlane);
+	output.clipDistances.y = 0;
+	output.clipDistances.z = 0;
+	output.clipDistances.w = 0;
     
     return output;
 }
@@ -114,6 +120,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
+
+	clip(input.clipDistances);
 	
 	output.Color = tex2D(textureSample,input.TexCoord) * float4(color,1);
 		

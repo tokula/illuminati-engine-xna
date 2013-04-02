@@ -79,11 +79,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     
     return output;
 }
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : Binormal)
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInputSkinned2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	
 	float4x4 skinTransform = 0;
     

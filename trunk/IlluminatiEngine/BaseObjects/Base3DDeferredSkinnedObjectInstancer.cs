@@ -65,7 +65,7 @@ namespace IlluminatiEngine
         protected DynamicVertexBuffer instanceVertexBuffer;
 
         //public BaseDeferredObject Object;
-        public Dictionary<Base3DDeferredSkinnedInstance, Matrix> instanceTransformMatrices { get; set; }
+        public Dictionary<Base3DDeferredSkinnedInstance, InstanceVertex> instanceTransformMatrices { get; set; }
         public VertexBuffer modelVertexBuffer { get; set; }
         public int vertCount { get; set; }
         public IndexBuffer indexBuffer { get; set; }
@@ -113,7 +113,8 @@ namespace IlluminatiEngine
             new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 0),
             new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 1),
             new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 2),
-            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 3)
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 3),
+            new VertexElement(64, VertexElementFormat.Vector4, VertexElementUsage.Binormal, 4)
         );
 
         /// <summary>
@@ -212,7 +213,7 @@ namespace IlluminatiEngine
         public Base3DDeferredSkinnedObjectInstancer(Game game, string modelAssetName) : base(game)
         {
             Instances = new Dictionary<int, Base3DDeferredSkinnedInstance>();
-            instanceTransformMatrices = new Dictionary<Base3DDeferredSkinnedInstance, Matrix>();
+            instanceTransformMatrices = new Dictionary<Base3DDeferredSkinnedInstance, InstanceVertex>();
 
             vertCount = 0;
 

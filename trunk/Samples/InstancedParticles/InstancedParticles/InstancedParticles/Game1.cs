@@ -84,7 +84,7 @@ namespace InstancedParticles
                 float y = MathHelper.Lerp(0, sqr / 2, (float)rnd.NextDouble());
                 float z = MathHelper.Lerp(-sqr, sqr, (float)rnd.NextDouble());
 
-                particles.Add(new Base3DParticleInstance(this, new Vector3(x, y, z), Vector3.One, ref snowInstancer));
+                particles.Add(new Base3DParticleInstance(this, new Vector3(x, y, z), Vector3.One, snowInstancer));
             }
 
             tailInstancer = new Base3DParticleInstancer(this, "Shaders/Particles/Trail");
@@ -100,7 +100,7 @@ namespace InstancedParticles
                 float z = MathHelper.Lerp(0, .2f, (float)rnd.NextDouble());
 
                 System.Threading.Thread.Sleep(1);
-                particles.Add(new Base3DParticleInstance(this, new Vector3(x, y, z), Vector3.One * 1f, ref tailInstancer));
+                particles.Add(new Base3DParticleInstance(this, new Vector3(x, y, z), Vector3.One * 1f, tailInstancer));
             }
 
             smokeInstancer = new Base3DParticleInstancer(this, "Shaders/Particles/RisingSmokeInstanced");
@@ -130,8 +130,8 @@ namespace InstancedParticles
                 {
 
                     Vector3 gp = position + (new Vector3((float)Math.Cos(rnd.Next(0, 360)), -.5f * 4, (float)Math.Sin(rnd.Next(0, 360))) * .25f);
-                    Vector3 mods = new Vector3(rnd.Next(64, 128) * .001f, rnd.Next(64, 128), size + 1);
-                    particles.Add(new Base3DParticleInstance(this, gp, Vector3.One * 2, mods, ref smokeInstancer));
+                    Vector4 mods = new Vector4(rnd.Next(64, 128) * .001f, rnd.Next(64, 128), size + 1,0);
+                    particles.Add(new Base3DParticleInstance(this, gp, Vector3.One * 2, mods, smokeInstancer));
                 }
             }
         }

@@ -39,8 +39,8 @@ namespace IlluminatiEngine
         protected DynamicVertexBuffer instanceVertexBuffer;
 
         //public BaseDeferredObject Object;
-        public ObjectArray<Matrix> tempMatrixList = new ObjectArray<Matrix>();
-        public Dictionary<Base3DParticleInstance, Matrix> instanceTransformMatrices = new Dictionary<Base3DParticleInstance, Matrix>();
+        public ObjectArray<InstanceVertex> tempMatrixList = new ObjectArray<InstanceVertex>();
+        public Dictionary<Base3DParticleInstance, InstanceVertex> instanceTransformMatrices = new Dictionary<Base3DParticleInstance, InstanceVertex>();
         public VertexBuffer modelVertexBuffer;
         public int vertCount = 0;
         public IndexBuffer indexBuffer;
@@ -54,7 +54,8 @@ namespace IlluminatiEngine
             new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
             new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 1),
             new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 2),
-            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3)
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3),
+            new VertexElement(64, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 4)
         );
 
         string effectAsset;

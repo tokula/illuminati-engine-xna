@@ -49,19 +49,25 @@ struct VertexShaderInput
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : BLENDWEIGHT)
+struct VertexShaderInput2
+{
+	float4x4 instanceTransform : BLENDWEIGHT;
+	float4   extras : BLENDWEIGHT4;
+};
+
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 
 	float3 p = float3(world._41,world._42,world._43);
 
-	input.Position.y = lerp(p.y , p.y + world._34, (time * riseSpeed * world._12 * world._23) % 1 );
-	output.alpha =  lerp(1,0,(time * riseSpeed * world._12 * world._23) % 1);
+	input.Position.y = lerp(p.y , p.y + input2.extras.z, (time * riseSpeed * input2.extras.x * input2.extras.y) % 1 );
+	output.alpha =  lerp(1,0,(time * riseSpeed * input2.extras.x * input2.extras.y) % 1);
 
-	input.Position.x = p.x +  cos(time + (world._12*100)) * .25f;
-	input.Position.z = p.z + sin(time + (world._23*100)) * .25f;
+	input.Position.x = p.x +  cos(time + (input2.extras.x*100)) * .25f;
+	input.Position.z = p.z + sin(time + (input2.extras.y*100)) * .25f;
 	
 	float3 center = mul(input.Position,World);	
 	float3 eyeVector = center - EyePosition;
@@ -103,7 +109,7 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 	}
 	else
 	{
-		if(output.Color.r > .55)
+		if(output.Color.r > .0125)
 		{
 			output.Depth.r = (1-input.screenPos.z); // Flip to keep accuracy away from floating point issues.
 		}

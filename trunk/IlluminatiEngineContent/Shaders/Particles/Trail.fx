@@ -45,11 +45,11 @@ struct VertexShaderInput
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : BLENDWEIGHT)
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	float3 p = float3(world._41,world._42,world._43);	
 
 	float orgY = p.y;
@@ -59,8 +59,8 @@ VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instan
 	input.Position.y = lerp(max, min, (p.y + (time * fallSpeed)) % 1 ) - max;
 		
 	// Calcs to mive the trail out
-	input.Position.x = p.x + cos(time + (world._12*100)) * rad;
-	input.Position.z = p.z + sin(time + (world._23*100)) * rad;
+	input.Position.x = p.x + cos(time + (input2.extras.x*100)) * rad;
+	input.Position.z = p.z + sin(time + (input2.extras.y*100)) * rad;
 	
 
 	float3 center = mul(input.Position,World);

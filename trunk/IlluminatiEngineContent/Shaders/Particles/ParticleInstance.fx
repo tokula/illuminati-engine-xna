@@ -44,11 +44,11 @@ struct VertexShaderInput
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : BLENDWEIGHT)
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input, VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	input.Position.xyz = float3(world._41,world._42,world._43);	
 	
 	float3 center = mul(input.Position,World);	
