@@ -100,11 +100,11 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     
     return output;
 }
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : BlendWeight)
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	
 	output.Position = mul(mul(input.Position, world),vp);
     output.TexCoord = input.TexCoord;

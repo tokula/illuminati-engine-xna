@@ -22,6 +22,7 @@ namespace IlluminatiEngine
 
         protected bool IsActive = true;
 
+        public Vector4 MyExtras = -Vector4.One * 10000;
         public Matrix World;
         public Matrix AAWorld;
 
@@ -39,20 +40,14 @@ namespace IlluminatiEngine
 
         Random rnd;
 
-        public Vector3 pMods = -Vector3.One * 10000;
         public Vector3 AdditionalCPUData;
 
-        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, ref Base3DParticleInstancer instancer,Quaternion orientation) : this(game, position, scale, instancer)
+        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Base3DParticleInstancer instancer,Quaternion orientation) : this(game, position, scale, instancer)
         {
             Orientation = orientation;
             this.Update(null);
         }
-        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Vector3 mods, Base3DParticleInstancer instancer)
-            : this(game,position, scale, instancer)
-        {
-            pMods = mods;
-            this.Update(null);
-        }
+        
         public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Base3DParticleInstancer instancer)
             : this(game)
         {
@@ -62,12 +57,18 @@ namespace IlluminatiEngine
             Scale = scale;
 
             Instancer = instancer;
-            Instancer.instanceTransformMatrices.Add(this, World);
+            Instancer.instanceTransformMatrices.Add(this, new InstanceVertex() { TransformMatrix = World, Extras = MyExtras });
             Instancer.Instances.Add(myID, this);
 
             this.Update(null);
         }
+        public Base3DParticleInstance(Game game, Vector3 position, Vector3 scale, Vector4 extras, Base3DParticleInstancer instancer)
+            : this(game, position, scale, instancer)
+        {
+            MyExtras = extras;
 
+            this.Update(null);
+        }
         public override void Update(GameTime gameTime)
         {
             if (Active)
@@ -79,20 +80,12 @@ namespace IlluminatiEngine
                     World.M13 = Scale.X * .5f;
                     World.M24 = Scale.Y * .5f;
 
-                    if (pMods == -Vector3.One * 10000)
+                    if (MyExtras == -Vector4.One * 10000)
                     {
-                        World.M12 = (float)rnd.NextDouble();
-                        World.M23 = (float)rnd.NextDouble();
-                        World.M34 = (float)rnd.NextDouble();
-                    }
-                    else
-                    {
-                        World.M12 = pMods.X;
-                        World.M23 = pMods.Y;
-                        World.M34 = pMods.Z;
-                    }
+                        MyExtras = new Vector4((float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble());                        
+                    }                    
                 }
-                Instancer.instanceTransformMatrices[this] = World;
+                Instancer.instanceTransformMatrices[this] = new InstanceVertex() { TransformMatrix = World, Extras = MyExtras };
                 Instancer.UpdateInstances = true;
             }
 
@@ -111,7 +104,7 @@ namespace IlluminatiEngine
                     IsActive = value;
                     if (value)
                     {
-                        Instancer.instanceTransformMatrices.Add(this, World);
+                        Instancer.instanceTransformMatrices.Add(this, new InstanceVertex() { TransformMatrix = World, Extras = MyExtras });
                         Instancer.Instances.Add(myID, this);
                         Enabled = true;
                     }

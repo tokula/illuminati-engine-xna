@@ -63,11 +63,11 @@ VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instan
     return output;
 }
 
-VertexShaderOutput VertexShaderFunctionHP(VertexShaderInputHP input,float4x4 instanceTransform : BLENDWEIGHT)
+VertexShaderOutput VertexShaderFunctionHP(VertexShaderInputHP input,VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	input.Position.xyz = 0;
 	
 	float3 center = mul(input.Position,World);	

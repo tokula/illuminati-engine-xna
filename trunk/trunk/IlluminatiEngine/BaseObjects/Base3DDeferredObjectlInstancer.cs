@@ -17,7 +17,28 @@ namespace IlluminatiEngine
     public interface IIGeomInstanced
     {
         Dictionary<int, Base3DDeferredObjectInstance> Instances { get; set; }
-        Dictionary<Base3DDeferredObjectInstance, Matrix> instanceTransformMatrices { get; set; }
+        Dictionary<Base3DDeferredObjectInstance, InstanceVertex> instanceTransformMatrices { get; set; }
+    }
+
+    public struct InstanceVertex : IVertexType
+    {
+        public Matrix TransformMatrix { get; set; }
+        public Vector4 Extras { get; set; }
+
+        public VertexDeclaration VertexDeclaration
+        {
+            get
+            {
+                return new VertexDeclaration
+                    (
+                    new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
+                    new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 1),
+                    new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 2),
+                    new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3),
+                    new VertexElement(64, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 4)
+                    );
+            }
+        }
     }
 
     public class Base3DDeferredObjectlInstancer : DrawableGameComponent, IDeferredRender, IHasMesh, IInstanced, IIGeomInstanced
@@ -70,7 +91,7 @@ namespace IlluminatiEngine
         protected DynamicVertexBuffer instanceVertexBuffer;
 
         //public BaseDeferredObject Object;
-        public Dictionary<Base3DDeferredObjectInstance, Matrix> instanceTransformMatrices{get;set;}
+        public Dictionary<Base3DDeferredObjectInstance, InstanceVertex> instanceTransformMatrices { get; set; }
         public VertexBuffer modelVertexBuffer { get; set; }
         public int vertCount { get; set; }
         public IndexBuffer indexBuffer { get; set; }
@@ -115,7 +136,8 @@ namespace IlluminatiEngine
             new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 0),
             new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 1),
             new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 2),
-            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3)
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 3),
+            new VertexElement(64, VertexElementFormat.Vector4, VertexElementUsage.BlendWeight, 4)
         );
 
         /// <summary>
@@ -215,7 +237,7 @@ namespace IlluminatiEngine
         public Base3DDeferredObjectlInstancer(Game game, string modelAssetName) : base(game)
         {
             Instances = new Dictionary<int, Base3DDeferredObjectInstance>();
-            instanceTransformMatrices = new Dictionary<Base3DDeferredObjectInstance, Matrix>();
+            instanceTransformMatrices = new Dictionary<Base3DDeferredObjectInstance, InstanceVertex>();
         
             vertCount = 0;
         

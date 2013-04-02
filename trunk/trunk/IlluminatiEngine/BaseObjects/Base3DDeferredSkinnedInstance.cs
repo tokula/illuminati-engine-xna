@@ -14,6 +14,7 @@ namespace IlluminatiEngine
         public Vector3 Scale = Vector3.One;
         public Quaternion Rotation = Quaternion.Identity;
 
+        public Vector4 MyExtras { get; set; }
         public Matrix World;
         public Matrix AAWorld;
 
@@ -48,10 +49,15 @@ namespace IlluminatiEngine
             Rotation = rotation;
 
             Instancer = instancer;
-            Instancer.instanceTransformMatrices.Add(this, World);
+            Instancer.instanceTransformMatrices.Add(this, new InstanceVertex() { TransformMatrix = World, Extras = MyExtras });
             Instancer.Instances.Add(Instancer.Instances.Count, this);
 
             this.Update(null);
+        }
+        public Base3DDeferredSkinnedInstance(Game game, Vector3 position, Vector3 scale, Quaternion rotation, Vector4 extras, ref Base3DDeferredSkinnedObjectInstancer instancer)
+            : this(game, position, scale, rotation, ref instancer)
+        {
+            MyExtras = extras;
         }
         public override void Update(GameTime gameTime)
         {
@@ -62,7 +68,7 @@ namespace IlluminatiEngine
             AAWorld = Matrix.CreateScale(Scale) *                      
                       Matrix.CreateTranslation(Position);
 
-            Instancer.instanceTransformMatrices[this] = World;            
+            Instancer.instanceTransformMatrices[this] = new InstanceVertex() { TransformMatrix = World, Extras = MyExtras };            
         }
         public void TranslateAA(Vector3 distance)
         {

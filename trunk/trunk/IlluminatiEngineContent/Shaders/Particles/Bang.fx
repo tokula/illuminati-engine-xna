@@ -41,19 +41,19 @@ struct VertexShaderInput
 	float2 TexCoord : TEXCOORD0;
 };
 float pi2 = 3.14159265 * 2;
-VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,float4x4 instanceTransform : BLENDWEIGHT)
+VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInput2 input2)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-	float4x4 world = transpose(instanceTransform);
+	float4x4 world = transpose(input2.instanceTransform);
 	float3 p = float3(world._41,world._42,world._43);	
 	float orgY = p.y;
 	float rad = (50 * time) *.1f;
 
-	float c = cos(world._12 * pi2);
-	float s = sin(world._12 * pi2);
-	float c2 = cos(world._23 * pi2);
-	float s2 = sin(world._23 * pi2);
+	float c = cos(input2.extras.x * pi2);
+	float s = sin(input2.extras.x * pi2);
+	float c2 = cos(input2.extras.y * pi2);
+	float s2 = sin(input2.extras.y * pi2);
 	
 	p += float3(c * c2,s * c2,s2) * rad;
 

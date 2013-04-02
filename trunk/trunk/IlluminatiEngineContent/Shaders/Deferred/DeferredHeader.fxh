@@ -17,3 +17,15 @@ struct PixelShaderOutput
 	float4 Tangent	: COLOR2;	// Normal / Tangent map
 	float4 Depth	: COLOR3;	// Depth map (R) Specular (G) Glow (B) and Reflection (A)
 };
+
+struct VertexShaderInput2
+{
+	float4x4 instanceTransform : BLENDWEIGHT;
+	float4   extras : BLENDWEIGHT4;
+};
+
+struct VertexShaderInputSkinned2
+{
+	float4x4 instanceTransform : BINORMAL;
+	float4   extras : BINORMAL4;
+};
