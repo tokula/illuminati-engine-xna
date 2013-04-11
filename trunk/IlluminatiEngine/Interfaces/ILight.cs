@@ -18,6 +18,7 @@ namespace IlluminatiEngine
         Matrix View { get; }
         Matrix Projection { get; }
         RenderTarget2D ShadowMap { get; set; }
+        RenderTarget2D SoftShadowMap { get; set; }
 
         double ShadowMod { get; set; }
     }

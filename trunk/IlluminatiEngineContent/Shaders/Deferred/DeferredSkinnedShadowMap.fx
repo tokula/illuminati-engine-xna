@@ -79,6 +79,7 @@ technique ShadowMap
 {
     pass Pass1
     {
+		CULLMODE = NONE;
         VertexShader = compile vs_3_0 VertexShaderFunction();
         PixelShader = compile ps_3_0 PSBasicTexture();
     }
@@ -88,6 +89,7 @@ technique ShadowMapH
 {
     pass Pass1
     {
+		CULLMODE = NONE;
         VertexShader = compile vs_3_0 VertexShaderFunctionH();
         PixelShader = compile ps_3_0 PSBasicTexture();
     }

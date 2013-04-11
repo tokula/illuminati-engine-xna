@@ -53,7 +53,6 @@ namespace GeoClipMapTerrain
 
             renderer.ClearColor = Color.Black;
 
-
             //Water.Enabled = true;
             Water.maxAmplitude = .1f;
             Water.waterHeight = -7f;

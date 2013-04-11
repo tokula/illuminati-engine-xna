@@ -11,6 +11,8 @@ sampler g_sampBlit : register(s0);
 	AddressV = Clamp;
 };*/
 
+float2 halfPixel;
+
 float g_BlurAmount = 1.0f; // Kernel size multiplier
 static const int g_cKernelSize = 13;
 
@@ -25,15 +27,19 @@ static const float aBlurWeights[g_cKernelSize] =
 
 float4 BlurPS(float2 vec2TC : TEXCOORD0, uniform bool bHorizontal) : COLOR
 {
-	float4 clrOrg = tex2D(g_sampBlit,vec2TC);
+	float4 clrOrg = tex2D(g_sampBlit,vec2TC - halfPixel);
     float4 clrBlurred = 0;
+	float2 vec2TexCoord;
+
     for (int i=0; i<g_cKernelSize; i++)
-    {
-		float2 vec2TexCoord = vec2TC;
+    {		
+		vec2TexCoord = vec2TC - halfPixel;
 		float fOffset = (aTexelKernel[i] / 256.0f) * g_BlurAmount;
 		if (bHorizontal)
 			vec2TexCoord.x += fOffset;
-		else vec2TexCoord.y += fOffset;
+		else 
+			vec2TexCoord.y += fOffset;
+
         clrBlurred += tex2D(g_sampBlit,vec2TexCoord) * aBlurWeights[i];
 	}
     return clrBlurred;
