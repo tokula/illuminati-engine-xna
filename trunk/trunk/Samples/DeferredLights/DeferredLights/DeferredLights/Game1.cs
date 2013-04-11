@@ -64,7 +64,6 @@ namespace DeferredLights
             dude.Mesh = "Models/dude";
             Components.Add(dude);
 
-
             SunPosition = new Vector3(100, 300, -200);
 
             renderer.DirectionalLights.Add(new DeferredDirectionalLight(this, SunPosition, Vector3.Zero, Color.White, directionalIntensity, true));

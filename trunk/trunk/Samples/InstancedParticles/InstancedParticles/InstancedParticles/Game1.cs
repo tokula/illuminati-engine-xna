@@ -115,8 +115,6 @@ namespace InstancedParticles
                 PlaceRisingsmoke(new Vector3(x, -.75f, z), 5);
             }
 
-            
-
             SunPosition = new Vector3(0, 300, 200);
 
             renderer.DirectionalLights.Add(new DeferredDirectionalLight(this, SunPosition, Vector3.Zero, Color.White, 1, true));

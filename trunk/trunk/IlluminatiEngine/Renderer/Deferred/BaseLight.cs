@@ -18,6 +18,7 @@ namespace IlluminatiEngine.Renderer
         protected string name;
 
         protected RenderTarget2D shadowMap;
+        protected RenderTarget2D softShadowMap;
 
         protected Game Game;
 
@@ -32,6 +33,12 @@ namespace IlluminatiEngine.Renderer
         {
             get { return shadowMap; }
             set { shadowMap = value; }
+        }
+
+        public RenderTarget2D SoftShadowMap
+        {
+            get { return softShadowMap; }
+            set { softShadowMap = value; }
         }
 
         public string Name

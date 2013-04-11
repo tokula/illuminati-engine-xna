@@ -85,9 +85,14 @@ namespace IlluminatiEngine.Renderer.Deferred
             SGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             normalMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rgba1010102, DepthFormat.Depth24Stencil8);
             depthMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
-            lightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            lightMap =    new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             GameComponentHelper.reflectionMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             GameComponentHelper.reflectionSGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+
+            preLightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            SSSMBase = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            SSSMBlur = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            SSSM = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
 
             finalBackBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
             finalDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
@@ -140,7 +145,7 @@ namespace IlluminatiEngine.Renderer.Deferred
             // Create shadow Map
             if (!StopRender)
             {
-                DeferredShaddows(gameTime);
+                DeferredShaddows(gameTime);                
                 DeferredLighting(gameTime);
 
 
@@ -166,6 +171,69 @@ namespace IlluminatiEngine.Renderer.Deferred
             }
         }
 
+        public bool ScreenSpaceShadows = false;
+        RenderTarget2D SSSMBase;
+        RenderTarget2D SSSMBlur;
+        RenderTarget2D SSSM;
+        Effect SSSMS;
+        Effect SSSMB;
+        public void DeferredScreenSpaceShadowDLRT(ILight light)
+        {
+            // Now V an H blur the image..
+            if (SSSMB == null)
+                SSSMB = AssetManager.GetAsset<Effect>("Shaders/PostProcessing/Blur");
+
+            if (SSSMS == null)
+                SSSMS = AssetManager.GetAsset<Effect>("Shaders/SSSM");
+
+            GraphicsDevice.SetRenderTarget(SSSMBase);
+            GraphicsDevice.Clear(Color.Transparent);
+
+            SSSMS.Parameters["CastShadow"].SetValue(light.CastShadow);
+            SSSMS.Parameters["shadowMod"].SetValue((float)light.ShadowMod);
+            SSSMS.Parameters["intensity"].SetValue(light.Intensity);
+            
+            SSSMS.Parameters["viewProjectionInv"].SetValue(Matrix.Invert(Camera.View * Camera.Projection));
+            SSSMS.Parameters["lightViewProjection"].SetValue(light.View * light.Projection);
+
+            SSSMS.Parameters["shadowMap"].SetValue(light.ShadowMap);
+            SSSMS.Parameters["depthMap"].SetValue(depthMap);
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            SSSMS.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(t, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+
+            // Blur it.
+            GraphicsDevice.SetRenderTarget(SSSMBlur);
+            GraphicsDevice.Clear(Color.Transparent);
+
+            SSSMB.Parameters["g_BlurAmount"].SetValue(1);
+
+            SSSMB.CurrentTechnique = SSSMB.Techniques["BlurH"];
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            SSSMB.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(SSSMBase, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+
+            GraphicsDevice.SetRenderTarget(light.SoftShadowMap);
+            GraphicsDevice.Clear(Color.Transparent);
+
+            SSSMB.CurrentTechnique = SSSMB.Techniques["BlurV"];
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            SSSMB.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(SSSMBlur, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+            
+        }
+
+        
         Effect depthBlender;
         public void BlendDepth(Texture2D buff1, Texture2D buff2)
         {
@@ -181,9 +249,33 @@ namespace IlluminatiEngine.Renderer.Deferred
             spriteBatch.Draw(buff1, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
             spriteBatch.End();
 
-            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.SetRenderTarget(null);   
         }
-        
+
+        Effect lightSoftShadow;
+        public void BlendSoftShadowMap(Texture2D shadows, Color color)
+        {
+            if (lightSoftShadow == null)
+                lightSoftShadow = AssetManager.GetAsset<Effect>("Shaders/SoftShadowBlend");
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            lightSoftShadow.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(shadows, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+        }
+
+        Effect lightShadow;
+        public void BlendLightAndSoftShadowMap(Texture2D light, Texture2D shadows)
+        {
+            if (lightShadow == null)
+                lightShadow = AssetManager.GetAsset<Effect>("Shaders/CombineLightAndSoftShadows");
+
+            lightShadow.Parameters["buff2"].SetValue(shadows);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            lightShadow.CurrentTechnique.Passes[0].Apply();
+            spriteBatch.Draw(light, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            spriteBatch.End();
+        }
         
         public void InitializeDeferredRender()
         {
@@ -219,10 +311,15 @@ namespace IlluminatiEngine.Renderer.Deferred
 
                 GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
 
+                // depth maps are here..
                 
-                spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                //spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                if (preLightMap != null)
+                    spriteBatch.Draw(preLightMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
 
                 spriteBatch.Draw(lightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
+                //spriteBatch.Draw(preLightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
+                
 
                 spriteBatch.End();
 
@@ -233,8 +330,8 @@ namespace IlluminatiEngine.Renderer.Deferred
                 DepthRender.CurrentTechnique.Passes[0].Apply();
                 GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
                 //spriteBatch.Draw(blendedDepthBuffer, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
-                spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 5, 1, w, h), Color.White);
-                spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 5, 1, w, h), Color.White);
+                spriteBatch.Draw(depthMap, new Rectangle((w * 3) + 4, 1, w, h), Color.White);
+                spriteBatch.Draw(finalDepthBuffer, new Rectangle((w * 5) + 6, 1, w, h), Color.White);
                 spriteBatch.End();
             }
         }
@@ -246,9 +343,15 @@ namespace IlluminatiEngine.Renderer.Deferred
         List<IPointLight> pLights = new List<IPointLight>();
         List<IConeLight> cLights = new List<IConeLight>();
 
+        RenderTarget2D preLightMap;
         public void DeferredLighting(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(lightMap);
+            if (ScreenSpaceShadows)
+            {
+                GraphicsDevice.SetRenderTarget(preLightMap);
+            }
+            else
+                GraphicsDevice.SetRenderTarget(lightMap);
 
             GraphicsDevice.Clear(Color.Transparent);
             GraphicsDevice.BlendState = BlendState.Additive;
@@ -273,8 +376,46 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             GraphicsDevice.SetRenderTarget(null);
 
+            if (ScreenSpaceShadows)
+            {
+                dLights = new List<IDirectionalLight>(DirectionalLights.Where(entity => entity.Intensity > 0 && entity.Color != Color.Black && entity.CastShadow == true));
+                pLights = new List<IPointLight>(PointLights.Where(entity => entity.Intensity > 0 && entity.Color != Color.Black && entity.CastShadow == true));
+                cLights = new List<IConeLight>(ConeLights.Where(entity => entity.Intensity > 0 && entity.Color != Color.Black && entity.CastShadow == true));
+
+                GraphicsDevice.SetRenderTarget(SSSM);
+                GraphicsDevice.Clear(Color.Transparent);
+
+                cnt = dLights.Count;
+                for (int l = 0; l < cnt; l++)
+                    BlendSoftShadowMap(dLights[l].SoftShadowMap, dLights[l].Color);
+
+                cnt = pLights.Count;
+                for (int l = 0; l < cnt; l++)
+                    BlendSoftShadowMap(pLights[l].SoftShadowMap, pLights[l].Color);
+
+                cnt = cLights.Count;
+                for (int l = 0; l < cnt; l++)
+                    BlendSoftShadowMap(cLights[l].SoftShadowMap, cLights[l].Color);
+
+                GraphicsDevice.SetRenderTarget(null);
+
+                GraphicsDevice.SetRenderTarget(lightMap);
+                GraphicsDevice.Clear(Color.Black);
+
+                BlendLightAndSoftShadowMap(preLightMap, SSSM);
+                
+                GraphicsDevice.SetRenderTarget(null);
+            }
+            else
+            {
+                GraphicsDevice.SetRenderTarget(preLightMap);
+                GraphicsDevice.Clear(Color.Transparent);
+                GraphicsDevice.SetRenderTarget(null);
+            }
+
+
             GameComponentHelper.lightMap = lightMap;
-        }
+        }       
 
         public void RenderDirectionalLight(IDirectionalLight directionalLight)
         {
@@ -296,11 +437,14 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             deferredDirectionalLightEffect.Parameters["cameraPosition"].SetValue(Camera.Position);
 
-            deferredDirectionalLightEffect.Parameters["CastShadow"].SetValue(directionalLight.CastShadow);
-            if (directionalLight.CastShadow)
+            if (!ScreenSpaceShadows)
             {
-                deferredDirectionalLightEffect.Parameters["shadowMap"].SetValue(directionalLight.ShadowMap);
-                //SaveJpg(directionalLight.ShadowMap, "shadows.jpg");
+                deferredDirectionalLightEffect.Parameters["CastShadow"].SetValue(directionalLight.CastShadow);
+                if (directionalLight.CastShadow)
+                {
+                    deferredDirectionalLightEffect.Parameters["shadowMap"].SetValue(directionalLight.ShadowMap);
+                    //SaveJpg(directionalLight.ShadowMap, "shadows.jpg");
+                }
             }
             deferredDirectionalLightEffect.Parameters["viewProjectionInv"].SetValue(Matrix.Invert(Camera.View * Camera.Projection));
             deferredDirectionalLightEffect.Parameters["lightViewProjection"].SetValue(directionalLight.View * directionalLight.Projection);
@@ -334,9 +478,12 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             deferredConeLightEffect.Parameters["shadowMod"].SetValue((float)coneLight.ShadowMod);
 
-            deferredConeLightEffect.Parameters["CastShadow"].SetValue(coneLight.CastShadow);
-            if (coneLight.CastShadow)
-                deferredConeLightEffect.Parameters["shadowMap"].SetValue(coneLight.ShadowMap);
+            if (!ScreenSpaceShadows)
+            {
+                deferredConeLightEffect.Parameters["CastShadow"].SetValue(coneLight.CastShadow);
+                if (coneLight.CastShadow)
+                    deferredConeLightEffect.Parameters["shadowMap"].SetValue(coneLight.ShadowMap);
+            }
 
             deferredConeLightEffect.CurrentTechnique.Passes[0].Apply();
             // Set sampler state to Point as the Surface type requires it in XNA 4.0
@@ -458,6 +605,19 @@ namespace IlluminatiEngine.Renderer.Deferred
             cnt = lights.Count;
             for (int l = 0; l < cnt; l++)
                 RenderLightShadows(gameTime, lights[l]);
+
+            if (ScreenSpaceShadows)
+            {
+                for (int l = 0; l < cnt; l++)
+                    DeferredScreenSpaceShadowDLRT(lights[l]);
+            }
+
+            if (cnt == 0 && SSSM != null)
+            {
+                GraphicsDevice.SetRenderTarget(SSSM);
+                GraphicsDevice.Clear(Color.Transparent);
+                GraphicsDevice.SetRenderTarget(null);
+            }
         }
         public int shadowMapSize = 3;
         public void SetLightShadowMaps(List<ILight> lights)
@@ -465,7 +625,10 @@ namespace IlluminatiEngine.Renderer.Deferred
             int cnt = lights.Count;
 
             for (int l = 0; l < cnt; l++)
+            {
                 lights[l].ShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width * shadowMapSize, GraphicsDevice.Viewport.Height * shadowMapSize, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
+                lights[l].SoftShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            }
             
         }
 
@@ -530,7 +693,7 @@ namespace IlluminatiEngine.Renderer.Deferred
                     continue;
                 }                
             }
-            Game.GraphicsDevice.SetRenderTarget(null);            
+            Game.GraphicsDevice.SetRenderTarget(null);
         }
         
         public void DrawDeferred()
@@ -545,7 +708,7 @@ namespace IlluminatiEngine.Renderer.Deferred
             deferredSceneRenderEffect.Parameters["colorMap"].SetValue(colorMap);
             deferredSceneRenderEffect.Parameters["lightMap"].SetValue(lightMap);
             deferredSceneRenderEffect.Parameters["sgrMap"].SetValue(SGRMap);
-
+            
             deferredSceneRenderEffect.CurrentTechnique.Passes[0].Apply();
 
             GraphicsDevice.BlendState = BlendState.Opaque;
