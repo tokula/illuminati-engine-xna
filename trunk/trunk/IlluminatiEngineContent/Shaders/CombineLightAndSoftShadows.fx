@@ -1,4 +1,9 @@
-sampler screen : register(s0);
+//sampler screen : register(s0);
+uniform extern texture sceneMap;
+sampler screen = sampler_state 
+{
+    texture = <sceneMap>;    
+};
 
 texture buff2;
 
@@ -14,19 +19,43 @@ struct PS_INPUT
 {
 	float2 TexCoord	: TEXCOORD0;
 };
+struct VertexShaderInput
+{
+    float3 Position : POSITION0;
+	float2 TexCoord	: TEXCOORD0;
+};
+
+struct VertexShaderOutput
+{
+    float4 Position : POSITION0;
+	float2 TexCoord	: TEXCOORD0;
+};
+
+
+
+VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
+{
+    VertexShaderOutput output = (VertexShaderOutput)0;
+    output.Position = float4(input.Position,1);
+	output.TexCoord = input.TexCoord;
+    return output;
+}
 
 float4 Render(PS_INPUT Input) : COLOR0 
 {
 	float4 col = tex2D(screen, Input.TexCoord);
-	float col2 = 1-tex2D(buff2Sampler, Input.TexCoord).r;
+	float4 col2 = tex2D(buff2Sampler, Input.TexCoord);
 
-	return col * col2;
+	col *= col2.r;
+
+	return col;
 }
 
 technique PostInvert 
 {
 	pass P0
 	{
-		PixelShader = compile ps_2_0 Render();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 Render();
 	}
 }

@@ -131,7 +131,10 @@ namespace DeferredLights
                 renderer.DebugDeferred = !renderer.DebugDeferred;
 
             if (inputHandler.KeyboardManager.KeyPress(Keys.Space))
+            {
                 renderer.DirectionalLights[0].CastShadow = !renderer.DirectionalLights[0].CastShadow;
+                renderer.DirectionalLights[1].CastShadow = !renderer.DirectionalLights[1].CastShadow;
+            }
 
             if (inputHandler.KeyboardManager.KeyDown(Keys.T))
             {
