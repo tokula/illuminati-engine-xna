@@ -199,10 +199,11 @@ namespace IlluminatiEngine.Renderer.Deferred
             SSSMS.Parameters["shadowMap"].SetValue(light.ShadowMap);
             SSSMS.Parameters["depthMap"].SetValue(depthMap);
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
             SSSMS.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(t, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
-            spriteBatch.End();
+            sceneQuad.Draw(-Vector2.One, Vector2.One);
+            //spriteBatch.Draw(t, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            //spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -253,15 +254,18 @@ namespace IlluminatiEngine.Renderer.Deferred
         }
 
         Effect lightSoftShadow;
-        public void BlendSoftShadowMap(Texture2D shadows, Color color)
+        public void BlendSoftShadowMap(Texture2D shadows)
         {
             if (lightSoftShadow == null)
                 lightSoftShadow = AssetManager.GetAsset<Effect>("Shaders/SoftShadowBlend");
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+            lightSoftShadow.Parameters["sceneMap"].SetValue(shadows);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
             lightSoftShadow.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(shadows, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
-            spriteBatch.End();
+            GraphicsDevice.BlendState = BlendState.Additive;
+            sceneQuad.Draw(-Vector2.One, Vector2.One);
+            //spriteBatch.Draw(shadows, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
+            //spriteBatch.End();
         }
 
         Effect lightShadow;
@@ -271,10 +275,13 @@ namespace IlluminatiEngine.Renderer.Deferred
                 lightShadow = AssetManager.GetAsset<Effect>("Shaders/CombineLightAndSoftShadows");
 
             lightShadow.Parameters["buff2"].SetValue(shadows);
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            lightShadow.Parameters["sceneMap"].SetValue(light);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
+            GraphicsDevice.BlendState = BlendState.Additive;
             lightShadow.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(light, GraphicsDevice.Viewport.TitleSafeArea, Color.White);
-            spriteBatch.End();
+            sceneQuad.Draw(-Vector2.One, Vector2.One);
+            //spriteBatch.Draw(light, GraphicsDevice.Viewport.TitleSafeArea, Color.White);            
+            //spriteBatch.End();
         }
         
         public void InitializeDeferredRender()
@@ -314,8 +321,8 @@ namespace IlluminatiEngine.Renderer.Deferred
                 // depth maps are here..
                 
                 //spriteBatch.Draw(GameComponentHelper.reflectionMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
-                if (preLightMap != null)
-                    spriteBatch.Draw(preLightMap, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
+                if (SSSM != null)
+                    spriteBatch.Draw(SSSM, new Rectangle((w * 4) + 5, 1, w, h), Color.White);
 
                 spriteBatch.Draw(lightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
                 //spriteBatch.Draw(preLightMap, new Rectangle((w * 6) + 7, 1, w, h), Color.White);
@@ -387,15 +394,15 @@ namespace IlluminatiEngine.Renderer.Deferred
 
                 cnt = dLights.Count;
                 for (int l = 0; l < cnt; l++)
-                    BlendSoftShadowMap(dLights[l].SoftShadowMap, dLights[l].Color);
+                    BlendSoftShadowMap(dLights[l].SoftShadowMap);
 
                 cnt = pLights.Count;
                 for (int l = 0; l < cnt; l++)
-                    BlendSoftShadowMap(pLights[l].SoftShadowMap, pLights[l].Color);
+                    BlendSoftShadowMap(pLights[l].SoftShadowMap);
 
                 cnt = cLights.Count;
                 for (int l = 0; l < cnt; l++)
-                    BlendSoftShadowMap(cLights[l].SoftShadowMap, cLights[l].Color);
+                    BlendSoftShadowMap(cLights[l].SoftShadowMap);
 
                 GraphicsDevice.SetRenderTarget(null);
 
