@@ -46,6 +46,7 @@ struct VertexShaderOutput
     float3 Normal : Normal0;
 	float3x3 Tangent: Tangent0;
 	float4 SPos : TexCoord1;
+	float4 color : Color0;
 };
 
 struct VertexShaderInput
@@ -58,8 +59,6 @@ struct VertexShaderInput
 	float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
 };
-
-
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
@@ -76,6 +75,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Tangent[2] = output.Normal;    
 	
 	output.SPos = output.Position;
+
+	output.color = 1;
     
     return output;
 }
@@ -103,6 +104,8 @@ VertexShaderOutput VertexShaderFunctionH(VertexShaderInput input,VertexShaderInp
 	output.Tangent[2] = output.Normal;    
 	
 	output.SPos = output.Position;
+
+	output.color = input2.extras;
     
     return output;
 }
@@ -111,7 +114,7 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
 	
-	output.Color = tex2D(textureSample,input.TexCoord)  * float4(color,1);
+	output.Color = tex2D(textureSample,input.TexCoord)  * float4(color,1) + input.color;
 	
 	float3 n = 2.0f * tex2D(BumpMapSampler,input.TexCoord) - 1.0f;
 	

@@ -82,21 +82,21 @@ namespace IlluminatiEngine.Renderer.Deferred
         protected override void LoadContent()
         {
             colorMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            SGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            normalMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rgba1010102, DepthFormat.Depth24Stencil8);
+            SGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            normalMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rgba1010102, DepthFormat.None);
             depthMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
-            lightMap =    new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            GameComponentHelper.reflectionMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            GameComponentHelper.reflectionSGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            lightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            GameComponentHelper.reflectionMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            GameComponentHelper.reflectionSGRMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
 
-            preLightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            SSSMBase = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            SSSMBlur = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            SSSM = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            preLightMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            SSSMBase = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            SSSMBlur = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            SSSM = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
 
-            finalBackBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            finalDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
-            blendedDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rg32, DepthFormat.Depth24Stencil8);
+            finalBackBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
+            finalDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.None);
+            blendedDepthBuffer = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Rg32, DepthFormat.None);
 
             halfPixel = -new Vector2(.5f / (float)GraphicsDevice.Viewport.Width,
                                      .5f / (float)GraphicsDevice.Viewport.Height);
@@ -119,7 +119,7 @@ namespace IlluminatiEngine.Renderer.Deferred
             GraphicsDevice.Clear(ClearColor);
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            GraphicsDevice.BlendState = BlendState.Opaque;            
+            GraphicsDevice.BlendState = BlendState.Opaque;
 
             if (!StopRender)
             {
@@ -276,12 +276,22 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             lightShadow.Parameters["buff2"].SetValue(shadows);
             lightShadow.Parameters["sceneMap"].SetValue(light);
+            lightShadow.Parameters["lightOnly"].SetValue(false);
             //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
             GraphicsDevice.BlendState = BlendState.Additive;
             lightShadow.CurrentTechnique.Passes[0].Apply();
             sceneQuad.Draw(-Vector2.One, Vector2.One);
             //spriteBatch.Draw(light, GraphicsDevice.Viewport.TitleSafeArea, Color.White);            
             //spriteBatch.End();
+        }
+        public void BlendLightAndSoftShadowMap(Texture2D light)
+        {
+            if (lightShadow == null)
+                lightShadow = AssetManager.GetAsset<Effect>("Shaders/CombineLightAndSoftShadows");
+
+            lightShadow.Parameters["sceneMap"].SetValue(light);
+            lightShadow.Parameters["lightOnly"].SetValue(true);
+            sceneQuad.Draw(-Vector2.One, Vector2.One);
         }
         
         public void InitializeDeferredRender()
@@ -409,7 +419,10 @@ namespace IlluminatiEngine.Renderer.Deferred
                 GraphicsDevice.SetRenderTarget(lightMap);
                 GraphicsDevice.Clear(Color.Black);
 
-                BlendLightAndSoftShadowMap(preLightMap, SSSM);
+                if(dLights.Count > 0 || dLights.Count > 0 || dLights.Count > 0)
+                    BlendLightAndSoftShadowMap(preLightMap, SSSM);
+                else
+                    BlendLightAndSoftShadowMap(preLightMap);
                 
                 GraphicsDevice.SetRenderTarget(null);
             }
@@ -633,8 +646,8 @@ namespace IlluminatiEngine.Renderer.Deferred
 
             for (int l = 0; l < cnt; l++)
             {
-                lights[l].ShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width * shadowMapSize, GraphicsDevice.Viewport.Height * shadowMapSize, false, SurfaceFormat.Single, DepthFormat.Depth24Stencil8);
-                lights[l].SoftShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+                lights[l].ShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width * shadowMapSize, GraphicsDevice.Viewport.Height * shadowMapSize, false, SurfaceFormat.Single, DepthFormat.None);
+                lights[l].SoftShadowMap = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.None);
             }
             
         }

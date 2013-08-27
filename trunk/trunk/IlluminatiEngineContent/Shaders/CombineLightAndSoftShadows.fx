@@ -1,4 +1,6 @@
 //sampler screen : register(s0);
+
+bool lightOnly = false;
 uniform extern texture sceneMap;
 sampler screen = sampler_state 
 {
@@ -46,7 +48,8 @@ float4 Render(PS_INPUT Input) : COLOR0
 	float4 col = tex2D(screen, Input.TexCoord);
 	float4 col2 = tex2D(buff2Sampler, Input.TexCoord);
 
-	col *= col2.r;
+	if(!lightOnly)
+		col *= col2.r;
 
 	return col;
 }

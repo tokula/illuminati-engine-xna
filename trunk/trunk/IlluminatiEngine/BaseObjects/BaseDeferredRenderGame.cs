@@ -315,7 +315,7 @@ namespace IlluminatiEngine
                 if (!renderer.StopRender)
                 {
                     GraphicsDevice.Clear(renderer.ClearColor);
-                    spriteBatch.Begin();
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
                     spriteBatch.Draw(renderer.finalBackBuffer, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     spriteBatch.End();
                 }
@@ -337,6 +337,9 @@ namespace IlluminatiEngine
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
             spriteBatch.Draw(assetManager.GetAsset<Texture2D>("EngineIcon"), new Rectangle(GraphicsDevice.Viewport.TitleSafeArea.Right - 70, GraphicsDevice.Viewport.TitleSafeArea.Bottom - 70, 64, 64), new Color(1, 1, 1, .25f));
             spriteBatch.End();
+
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.BlendState = BlendState.Opaque;
 
            base.EndDraw();
         }
