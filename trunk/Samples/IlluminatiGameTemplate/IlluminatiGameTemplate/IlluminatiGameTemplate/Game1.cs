@@ -66,7 +66,6 @@ namespace IlluminatiGameTemplate
             Components.Add(box2);
 
             SunPosition = new Vector3(0, 300, 200);
-
             renderer.DirectionalLights.Add(new DeferredDirectionalLight(this, SunPosition, Vector3.Zero, Color.White, 1, true));            
         }
 

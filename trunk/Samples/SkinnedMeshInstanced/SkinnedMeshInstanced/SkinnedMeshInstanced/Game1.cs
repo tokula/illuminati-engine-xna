@@ -57,7 +57,7 @@ namespace SkinnedMeshInstanced
                 float y = -1;
                 float z = MathHelper.Lerp(-sqr , sqr /2, (float)rnd.NextDouble());
 
-                dudes.Add(dudes.Count, new Base3DDeferredSkinnedInstance(this, new Vector3(x, y, z - 5), Vector3.One * .05f, Quaternion.CreateFromAxisAngle(Vector3.Up,MathHelper.PiOver2), ref skinnedInstancer));
+                dudes.Add(dudes.Count, new Base3DDeferredSkinnedInstance(this, new Vector3(x, y, z - 5), Vector3.One * .05f, Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2), new Vector4((float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1), ref skinnedInstancer));
             }
 
 
