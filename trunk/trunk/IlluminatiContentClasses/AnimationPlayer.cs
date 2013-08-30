@@ -10,6 +10,8 @@ namespace IlluminatiContentClasses
     /// </summary>
     public class AnimationPlayer
     {
+        public TimeSpan AnimationOffSet { get; set; }
+
         #region Fields
 
 
@@ -35,10 +37,12 @@ namespace IlluminatiContentClasses
         /// <summary>
         /// Constructs a new animation player.
         /// </summary>
-        public AnimationPlayer(SkinningData skinningData)
+        public AnimationPlayer(SkinningData skinningData, TimeSpan animationOffSet = new TimeSpan())
         {
             if (skinningData == null)
                 throw new ArgumentNullException("skinningData");
+
+            AnimationOffSet = animationOffSet;
 
             skinningDataValue = skinningData;
 
@@ -57,7 +61,7 @@ namespace IlluminatiContentClasses
                 throw new ArgumentNullException("clip");
 
             currentClipValue = clip;
-            currentTimeValue = TimeSpan.Zero;
+            currentTimeValue = TimeSpan.Zero + AnimationOffSet;
             currentKeyframe = 0;
 
             // Initialize bone transforms to the bind pose.
