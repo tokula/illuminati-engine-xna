@@ -24,6 +24,8 @@ namespace IlluminatiEngine
         public List<string> ReflectionMaterials { get; set; }
         protected Texture2D blank;
 
+        public TimeSpan AnimationOffSet { get; set; }
+
         protected List<BoundingSphere> aaSphereBounds;
         public List<BoundingSphere> AASphereBounds
         {
@@ -264,7 +266,7 @@ namespace IlluminatiEngine
             Dictionary<int, List<Vector4>> bi = (Dictionary<int, List<Vector4>>)TagData["BlendIndex"];
             Dictionary<int, List<Vector4>> bw = (Dictionary<int, List<Vector4>>)TagData["BlendWeight"];
 
-            animationPlayer = new AnimationPlayer((SkinningData)meshData["SkinningData"]);
+            animationPlayer = new AnimationPlayer((SkinningData)meshData["SkinningData"], AnimationOffSet);
             if (!string.IsNullOrEmpty(AnimationClip))
                 animationPlayer.StartClip(animationPlayer.skinningDataValue.AnimationClips[AnimationClip]);
 

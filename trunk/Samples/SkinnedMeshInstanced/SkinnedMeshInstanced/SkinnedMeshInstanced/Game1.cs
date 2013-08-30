@@ -28,6 +28,7 @@ namespace SkinnedMeshInstanced
         BaseDeferredObject floor;
 
         Base3DDeferredSkinnedObjectInstancer skinnedInstancer;
+        Base3DDeferredSkinnedObjectInstancer skinnedInstancerOffset;
         Dictionary<int, Base3DDeferredSkinnedInstance> dudes = new Dictionary<int, Base3DDeferredSkinnedInstance>();
 
         float sqr = 10;
@@ -50,6 +51,11 @@ namespace SkinnedMeshInstanced
             skinnedInstancer.AnimationClip = "Take 001";
             Components.Add(skinnedInstancer);
 
+            skinnedInstancerOffset = new Base3DDeferredSkinnedObjectInstancer(this, "Models/dude");
+            skinnedInstancerOffset.AnimationOffSet = new TimeSpan(0, 0, 0, 0, 500);
+            skinnedInstancerOffset.AnimationClip = "Take 001";
+            Components.Add(skinnedInstancerOffset);
+
             
             for (int d = 0; d < 10; d++)
             {
@@ -57,7 +63,10 @@ namespace SkinnedMeshInstanced
                 float y = -1;
                 float z = MathHelper.Lerp(-sqr , sqr /2, (float)rnd.NextDouble());
 
-                dudes.Add(dudes.Count, new Base3DDeferredSkinnedInstance(this, new Vector3(x, y, z - 5), Vector3.One * .05f, Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2), new Vector4((float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1), ref skinnedInstancer));
+                if(((d+1) % 2) == 0) // Split them in two.
+                    dudes.Add(dudes.Count, new Base3DDeferredSkinnedInstance(this, new Vector3(x, y, z - 5), Vector3.One * .05f, Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2), new Vector4((float)rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble(), 1), ref skinnedInstancer));
+                else
+                    dudes.Add(dudes.Count, new Base3DDeferredSkinnedInstance(this, new Vector3(x, y, z - 5), Vector3.One * .05f, Quaternion.CreateFromAxisAngle(Vector3.Up, MathHelper.PiOver2), Color.White.ToVector4(), ref skinnedInstancerOffset));
             }
 
 
@@ -137,17 +146,17 @@ namespace SkinnedMeshInstanced
             if (inputHandler.KeyboardManager.KeyDown(Keys.Down) || inputHandler.GamePadManager.State[PlayerIndex.One].ThumbSticks.Right.Y < 0)
                 camera.Rotate(Vector3.Right, -speedRot);
 
-            for (int d = 0; d < skinnedInstancer.Instances.Count; d++)
+            for (int d = 0; d < dudes.Count; d++)
             {
-                skinnedInstancer.Instances[d].TranslateOO(Vector3.Forward * .0325f);
+                dudes[d].TranslateOO(Vector3.Forward * .0325f);
 
-                if (skinnedInstancer.Instances[d].Position.X < -10)
+                if (dudes[d].Position.X < -10)
                 {
-                    skinnedInstancer.Instances[d].Position.Z = MathHelper.Lerp(-sqr, sqr, (float)rnd.NextDouble()) -10;
-                    skinnedInstancer.Instances[d].Position.X = 10;
+                    dudes[d].Position.Z = MathHelper.Lerp(-sqr, sqr, (float)rnd.NextDouble()) - 10;
+                    dudes[d].Position.X = 10;
                 }
 
-                skinnedInstancer.Instances[d].Update(gameTime);
+                dudes[d].Update(gameTime);
             }
 
             base.Update(gameTime);

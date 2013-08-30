@@ -114,7 +114,7 @@ PixelShaderOutput PSBasicTexture(VertexShaderOutput input) : COLOR0
 {
 	PixelShaderOutput output = (PixelShaderOutput)0;
 	
-	output.Color = tex2D(textureSample,input.TexCoord)  * float4(color,1) + input.color;
+	output.Color = tex2D(textureSample,input.TexCoord)  * float4(color,1) * input.color;
 	
 	float3 n = 2.0f * tex2D(BumpMapSampler,input.TexCoord) - 1.0f;
 	
